@@ -1,0 +1,118 @@
+import express, { Request, Response } from "express";
+import { body, validationResult } from "express-validator";
+import Teacher from "../models/Teacher";
+import auth from "../middleware/auth";
+
+const router = express.Router();
+
+// @route POST api/teachers
+// @desc  Register teacher
+// @access Private
+router.post('/', [
+    body('name').notEmpty().withMessage('Name is required').escape(),
+    body('surname').notEmpty().withMessage('Surname is required').escape(),
+    body('phoneNumber').isLength({ min: 10, max: 10 }).withMessage('Invalid phone number'),
+    body('address').notEmpty().withMessage('Address is required').escape(),
+    body('dob').notEmpty().withMessage('DOB is required').isISO8601().withMessage('Invalid date format'),
+], auth, async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, middleName, surname, dob, address, phoneNumber, email } = req.body;
+
+    try {
+        let teacher = await Teacher.findOne({ name, surname, dob });
+
+        if (teacher) return res.status(400).json({ errors: [{ msg: 'Teacher already exists' }] });
+
+        teacher = new Teacher({ name, middleName, surname, dob, address, phoneNumber, email });
+
+        await teacher.save();
+
+        res.send('Teacher registered successfuly')
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// @route POST api/teachers
+// @desc  Update a teacher
+// @access Private
+router.put('/:teacher_id', auth, async (req: Request, res: Response) => {
+    const { name, middleName, surname, dob, address, phoneNumber, email } = req.body;
+
+    try {
+        let teacher = await Teacher.findById(req.params.teacher_id);
+        if (!teacher) return res.status(400).json({ errors: [{ msg: 'Teacher not found' }] });
+
+        // Update the teacher's fields
+        if (name) teacher.name = name;
+        if (middleName) teacher.middleName = middleName;
+        if (surname) teacher.surname = surname;
+        if (dob) teacher.dob = dob;
+        if (address) teacher.address = address;
+        if (phoneNumber) teacher.phoneNumber = phoneNumber;
+        if (email) teacher.email = email;
+
+        await teacher.save();
+        res.send('Teacher updated successfully');
+
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+})
+
+// @route GET api/teachers
+// @desc  get all teachers
+// @access Private
+router.get('/', auth, async (req: Request, res: Response) => {
+    try {
+        const teachers = await Teacher.find();
+
+        if (!teachers) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
+
+        res.json(teachers);
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route GET api/teachers/:teacher_id
+// @desc  get teacher by ID
+// @access Private
+router.get('/:teacher_id', auth, async (req: Request, res: Response) => {
+    try {
+        const teacher = await Teacher.findById(req.params.teacher_id);
+
+        if (!teacher) return res.status(404).json({ errors: [{ msg: 'Teacher does not exist' }] });
+
+        res.status(200).json(teacher);
+
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route DELETE api/teachers/:teacher_id
+// @desc Delete a teacher by ID
+// @access Private
+router.delete('/:teacher_id', auth, async (req: Request, res: Response) => {
+    try {
+        // Find and delete the teacher by ID
+        await Teacher.findOneAndRemove({ _id: req.params.teacher_id });
+        res.json({ msg: 'Teacher deleted' });
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+
+export default router;

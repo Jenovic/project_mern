@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.alert-success {
+    @apply bg-green-200;
+}
+
+.alert-error {
+    @apply bg-red-300 text-black;
+}
+
+.alert-warning {
+    @apply bg-yellow-200;
+}
+
+.alert-info {
+    @apply bg-blue-200;
+}
+
+@layer base {
+    .prose-sys {
+        @apply prose prose-a:no-underline prose-a:cursor-pointer prose-li:p-0 prose-li:m-0;
+    }
+
+
+}
