@@ -11,8 +11,6 @@ const Alert = () => {
         dispatch(removeAlert(id));
     }
 
-    console.log('Alert is rendering');
-
     useEffect(() => {
         const alertTimeout = setTimeout(() => {
             if (alerts.length > 0) {

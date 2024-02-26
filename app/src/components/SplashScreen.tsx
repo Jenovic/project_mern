@@ -10,10 +10,11 @@ const SplashScreen = () => {
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
     const divStyle = { backgroundImage: `url(${splash})` };
 
-    if (isAuthenticated) {
-        navigate('/dashboard');
-        // return null;
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <section style={divStyle} className='absolute left-0 top-0 w-full h-screen bg-cover bg-no-repeat bg-center flex flex-col justify-center items-center'>
