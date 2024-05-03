@@ -1,32 +1,8 @@
-import React, { useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-// import type { RootState } from '../../store';
 import LeftMenu from './LeftMenu';
 import Tiles from './Tiles';
 import StudentList from '../Student/StudentList';
-import { getStudents } from '../../services/students';
-import { loadStudents } from '../../slices/studentSlice';
-import { setAlert } from '../../slices/alertSlice';
-import { v4 as uuidv4 } from 'uuid';
 
 const Dashboard = () => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const loadStudent = async () => {
-            try {
-                const res = await getStudents();
-                dispatch(loadStudents(res.data));
-            } catch (error: any) {
-                const message = error.msg;
-                dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-            }
-
-        }
-        loadStudent();
-    }, []);
-
     return (
         <div className='container mx-auto'>
             <div className='grid md:grid-cols-12 gap-8 my-20'>

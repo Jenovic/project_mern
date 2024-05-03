@@ -19,17 +19,25 @@ interface Student {
     address: string;
     phoneNumber?: string;
     responsables: Responsable[];
-    // class?: IClass;
 }
 
-const initialState: Student[] = [];
+interface StudentState {
+    students: Student[];
+}
+
+const initialState: StudentState = {
+    students: []
+};
 
 const studentSlice = createSlice({
     name: 'student',
     initialState,
     reducers: {
-        loadStudents: (state, action: PayloadAction<Student>) => {
-            return [...state, action.payload]
+        loadStudents: (state, action: PayloadAction<Student[]>) => {
+            return {
+                ...state,
+                students: action.payload,
+            }
         },
         updateStudent: (state, action: PayloadAction<Student>) => { },
         deleteStudent: (state, action: PayloadAction<Student>) => { },

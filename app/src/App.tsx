@@ -20,13 +20,15 @@ const App = () => {
   const dispatch = useDispatch();
 
   const initialLoad = async () => {
-    const user = await loadUserSvc();
-    dispatch(loadUser(user.data));
+    if (localStorage.token) {
+      const user = await loadUserSvc();
+      dispatch(loadUser(user.data));
+    }
   }
 
-useEffect(() => {
-  initialLoad();
-}, []);
+  useEffect(() => {
+    initialLoad();
+  }, []);
 
   return (
     <Router>

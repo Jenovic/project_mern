@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const getStudents = async () => {
+export const getStudentsSvc = async () => {
     const config = {
         headers: {
             'x-auth-token': localStorage.token
