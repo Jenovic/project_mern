@@ -2,6 +2,7 @@ import LeftMenu from './LeftMenu';
 import Tiles from './Tiles';
 import StudentList from '../Student/StudentList';
 import TeacherList from '../Teacher/TeacherList';
+import ClassroomList from '../Classroom/ClassroomList';
 
 const Dashboard = () => {
     return (
@@ -25,6 +26,7 @@ const Dashboard = () => {
                         </div>
                         <StudentList />
                         <TeacherList />
+                        <ClassroomList />
                     </div>
                 </div>
             </div>

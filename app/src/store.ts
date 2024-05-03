@@ -3,12 +3,14 @@ import alertReducer from './slices/alertSlice';
 import authReducer from './slices/authSlice';
 import studentReducer from './slices/studentSlice';
 import teacherReducer from './slices/teacherSlice';
+import classroomReducer from './slices/classroomSlice';
 
 const rootReducer = combineReducers({
     alerts: alertReducer,
     auth: authReducer,
     students: studentReducer,
-    teachers: teacherReducer
+    teachers: teacherReducer,
+    classrooms: classroomReducer
 })
 
 const store = configureStore({
