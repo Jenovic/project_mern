@@ -25,11 +25,11 @@ const TeacherList = () => {
     }, []);
   return (
     <div className='border-2 p-5 rounded'>
-            <h1>Teachers</h1>
+            <h1 className="font-semibold uppercase pb-2">Teachers</h1>
             <div className="relative overflow-x-auto">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
+                        <tr className='bg-sky-700 text-white'>
                             <th scope="col" className="px-6 py-3">
                                 Name
                             </th>

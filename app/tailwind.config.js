@@ -9,7 +9,8 @@ module.exports = {
     'text-orange-500',
     'text-pink-500',
     'text-blue-500',
-    'text-green-500'
+    'text-green-500',
+    '[&>*:nth-child(1)]:bg-sky-100'
   ],
   theme: {
     extend: {

@@ -7,7 +7,7 @@ const LeftMenu = () => {
 
     return (
         <div>
-            <div className='px-5 py-4 bg-sky-900 rounded-t-xl flex flex-col gap-1'>
+            <div className='px-5 py-4 bg-sky-700 rounded-t-xl flex flex-col gap-1'>
                 <span className='text-xl text-white'>Logged in: {user?.name}</span>
                 <span className='text-white text-base'><i className="fa fa-envelope"></i> email: {user?.email}</span>
             </div>
