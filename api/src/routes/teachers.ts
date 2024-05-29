@@ -71,12 +71,22 @@ router.put('/:teacher_id', auth, async (req: Request, res: Response) => {
 // @desc  get all teachers
 // @access Private
 router.get('/', auth, async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
     try {
-        const teachers = await Teacher.find();
+        const teachers = await Teacher.find().limit(limit).skip(skip);
+        const total = await Teacher.countDocuments();
 
-        if (!teachers) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
+        if (!teachers || teachers.length === 0) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
 
-        res.json(teachers);
+        res.json({
+            teachers,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
     } catch (error: any) {
         console.error(error.message);
         res.status(500).send('Server Error');

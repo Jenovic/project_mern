@@ -3,7 +3,7 @@ import { IClass } from './Class';
 
 // Define the Teacher schema
 const TeacherSchema = new Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     middleName: String,
     surname: { type: String, required: true },
     dob: { type: Date, required: true },

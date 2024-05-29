@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,21 +10,36 @@ import { loadTeachers } from '../../slices/teacherSlice';
 const TeacherList = () => {
     const dispatch = useDispatch();
     const teachers = useSelector((state: RootState) => state.teachers.teachers);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const loadTeacherList = async () => {
             try {
-                const res = await getTeachersSvc();
-                dispatch(loadTeachers(res.data));
+                const res = await getTeachersSvc(page);
+                dispatch(loadTeachers(res.data.teachers));
+                setTotalPages(res.data.pages);
             } catch (error: any) {
                 const message = error.msg;
                 dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
             }
         }
         loadTeacherList();
-    }, []);
-  return (
-    <div className='border-2 p-5 rounded'>
+    }, [page]);
+
+    const handleNextPage = () => {
+        if (page < totalPages) {
+            setPage(page + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    };
+    return (
+        <div className='border-2 p-5 rounded'>
             <h1 className="font-semibold uppercase pb-2">Teachers</h1>
             <div className="relative overflow-x-auto">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -84,9 +99,24 @@ const TeacherList = () => {
                     </tbody>
                 </table>
             </div>
-
+            <div className="flex justify-between mt-4">
+                <button
+                    className="px-4 py-2 bg-gray-300 rounded"
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                >
+                    Previous
+                </button>
+                <button
+                    className="px-4 py-2 bg-gray-300 rounded"
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                >
+                    Next
+                </button>
+            </div>
         </div>
-  )
+    )
 }
 
 export default TeacherList
