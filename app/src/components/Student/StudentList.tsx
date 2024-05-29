@@ -11,6 +11,7 @@ const StudentList = () => {
     const students = useSelector((state: RootState) => state.students.students);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [rowIndex, setRowIndex] = useState(0);
 
     useEffect(() => {
         const loadStudentList = async () => {
@@ -38,6 +39,10 @@ const StudentList = () => {
         }
     };
 
+    const handleRowSelect = (idx: number) => {
+        setRowIndex(idx);
+    }
+
     return (
         <div className='border-2 p-5 rounded'>
             <h1 className='font-semibold uppercase pb-2'>Students</h1>
@@ -55,9 +60,9 @@ const StudentList = () => {
                             <th scope="col" className="px-3 py-3">Responsibles</th>
                         </tr>
                     </thead>
-                    <tbody className={`[&>*:nth-child(${1})]:bg-sky-100`}>
+                    <tbody className={`[&>*:nth-child(${rowIndex + 1})]:bg-sky-100`}>
                         {students.map((student, idx) => (
-                            <tr key={student.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow">
+                            <tr key={student.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx)}>
                                 <td className="px-3">
                                     <span className='flex items-center relative'>
                                         <span className='pr-2'>{(page - 1) * 10 + idx + 1}</span>

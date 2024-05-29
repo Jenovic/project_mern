@@ -11,7 +11,7 @@ const LeftMenu = () => {
                 <span className='text-xl text-white'>Logged in: {user?.name}</span>
                 <span className='text-white text-base'><i className="fa fa-envelope"></i> email: {user?.email}</span>
             </div>
-            <div className='px-5 py-8 flex flex-col gap-4 bg-gray-300 prose prose-p:m-0 prose-p:px-3 prose-p:py-2 prose-p:bg-gray-400 hover:prose-p:bg-sky-100 prose-p:rounded-md prose-p:no-underline prose-p:cursor-pointer'>
+            <div className='px-5 py-8 flex flex-col gap-4 bg-gray-300 prose prose-p:m-0 prose-p:shadow prose-p:px-3 prose-p:py-2 prose-p:bg-sky-700 prose-p:text-white hover:prose-p:bg-sky-100 hover:prose-p:text-black prose-p:rounded-md prose-p:no-underline prose-p:cursor-pointer prose-p:font-semibold'>
                 <p>Students</p>
                 <p>Teachers</p>
                 <p>Classrooms</p>
@@ -19,7 +19,7 @@ const LeftMenu = () => {
                     <span className='font-bold'><i className="fa-solid fa-gear"></i> System Settings</span>
                     <div className='mt-3'>
                         <label className='font-medium'>Locations: </label>
-                        <select className='rounded w-full h-9 px-2'>
+                        <select className='group rounded w-full h-9 px-2'>
                             <option>Choose location</option>
                             <option>Bel-air</option>
                             <option>Kasapa</option>

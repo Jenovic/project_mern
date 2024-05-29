@@ -76,7 +76,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     try {
-        const teachers = await Teacher.find().limit(limit).skip(skip);
+        const teachers = await Teacher.find().sort({ surname: 1 }).limit(limit).skip(skip);
         const total = await Teacher.countDocuments();
 
         if (!teachers || teachers.length === 0) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
