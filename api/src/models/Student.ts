@@ -12,9 +12,19 @@ const ResponsableSchema = new Schema({
     relationshipToStudent: { type: String, required: true },
 });
 
+export interface IResponsableSchema {
+    name: string
+    middleName?: string,
+    surname: string,
+    phoneNumber: string,
+    address: string,
+    email?: string,
+    relationshipToStudent: string,
+};
+
 // Define the Student schema
 const StudentSchema = new Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     middleName: String,
     surname: { type: String, required: true },
     dob: { type: Date, required: true },
@@ -32,7 +42,7 @@ export interface IStudent extends Document {
     dob: Date;
     address: string;
     phoneNumber?: string;
-    responsables: typeof ResponsableSchema[];
+    responsables: IResponsableSchema[];
     class?: IClass;
     date: Date;
 }

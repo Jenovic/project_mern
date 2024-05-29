@@ -135,12 +135,22 @@ router.put('/:student_id', auth, async (req: Request, res: Response) => {
 // @desc  get all students
 // @access Private
 router.get('/', auth, async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
     try {
-        const students = await Student.find();
+        const students = await Student.find().limit(limit).skip(skip);
+        const total = await Student.countDocuments();
 
-        if (!students) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });
+        if (!students || students.length === 0) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });
 
-        res.json(students);
+        res.json({
+            students,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+        });
     } catch (error: any) {
         console.error(error.message);
         res.status(500).send('Server Error');
