@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import book from '../assets/book.svg';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,9 +8,15 @@ import { logout } from '../slices/authSlice';
 const Navbar = () => {
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     const handleLogout = () => {
         dispatch(logout());
+    }
+
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible);
     }
 
     return (
@@ -22,12 +28,36 @@ const Navbar = () => {
                 </div>
 
                 {/* Links on the right */}
-                <ul className="flex gap-6 prose-sys prose-a:text-black text-xl hover:prose-a:underline">
-                    {!isAuthenticated && <li><Link to="/login">Login</Link></li>}
-                    {isAuthenticated && <li><Link to="/dashboard" >Dashboard</Link></li>}
-                    {isAuthenticated && <li><Link to="/my-account" >Account</Link></li>}
-                    {isAuthenticated && <li><a onClick={handleLogout}>Logout</a></li>}
-                </ul>
+                <div className="relative">
+
+                    <span className='text-black bg-sky-700 px-[9px] py-1 rounded-full cursor-pointer' id="dropdownNavMenu" onClick={toggleDropdown}><i className='fa-solid fa-user'></i></span>
+                    {dropdownVisible && (
+                        <ul
+                            id="dropdown"
+                            className="absolute right-0 mt-2 w-48 z-[200] bg-white border border-gray-200 rounded shadow-lg divide-y"
+                        >
+                            {!isAuthenticated && (
+                                <li className="px-4 py-2 relative hover:bg-gray-100">
+                                    <Link to="/login">Log in</Link>
+                                </li>
+                            )}
+                            {isAuthenticated && (
+                                <>
+                                    <li className="px-4 py-2  hover:bg-gray-100">
+                                        <p className='font-medium uppercase text-xs'>Account</p>
+                                        <div className='pl-2 flex flex-col py-1'>
+                                            <span className='font-medium text-sm'>{user?.name}</span>
+                                            <span className='text-sm'>{user?.email}</span>
+                                        </div>
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-100">
+                                        <a className='cursor-pointer' onClick={handleLogout}>Log out</a>
+                                    </li>
+                                </>
+                            )}
+                        </ul>
+                    )}
+                </div>
             </div>
         </nav>
     )
