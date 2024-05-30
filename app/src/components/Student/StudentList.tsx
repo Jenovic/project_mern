@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { getStudentsSvc } from '../../services/students';
 import { loadStudents } from '../../slices/studentSlice';
 import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
+import Pagination from '../Pagination/Pagination';
+import StudentForm from './StudentForm';
+import FormModal from '../Modal/FormModal';
 
 interface StudentProps {
     showFull: boolean;
@@ -17,6 +19,8 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
     useEffect(() => {
         const loadStudentList = async () => {
@@ -32,21 +36,26 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
         loadStudentList();
     }, [page]);
 
-    const handleNextPage = () => {
-        if (page < totalPages) {
-            setPage(page + 1);
-        }
-    };
-
-    const handlePreviousPage = () => {
-        if (page > 1) {
-            setPage(page - 1);
-        }
-    };
-
     const handleRowSelect = (idx: number) => {
         setRowIndex(idx);
     }
+
+    const handleEditClick = (student: any) => {
+        setSelectedStudent(student);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setSelectedStudent(null);
+    };
+
+    const handleFormSubmit = (updatedStudent: any) => {
+        // Update the student in the state/store
+        // Dispatch an action to update the student in the Redux store
+        // For simplicity, we'll just close the modal here
+        setShowModal(false);
+    };
 
     const displayedStudents = showFull ? students : students.slice(0, 5);
 
@@ -73,7 +82,10 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                                 <td className="px-3">
                                     <span className='flex items-center relative'>
                                         <span className='pr-2'>{(page - 1) * 10 + idx + 1}</span>
-                                        <i className="fa-regular fa-pen-to-square text-lg px-2 py-3 cursor-pointer hover:bg-sky-500 hover:text-white"></i>
+                                        <i
+                                            className="fa-regular fa-pen-to-square text-lg px-2 py-3 cursor-pointer hover:bg-sky-500 hover:text-white"
+                                            onClick={() => handleEditClick(student)}
+                                        ></i>
                                     </span>
                                 </td>
                                 <td className="px-3">{student.name}</td>
@@ -94,33 +106,14 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                     </tbody>
                 </table>
             </div>
-            {showFull &&
-                <div className="flex justify-center mt-4 gap-3">
-                    <button
-                        className={`px-4 py-2 ${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-sky-300 cursor-pointer'} rounded`}
-                        onClick={handlePreviousPage}
-                        disabled={page === 1}
-                    >
-                        <i className="fa-solid fa-angle-left"></i>
-                    </button>
-                    <button
-                        className={`px-4 py-2 ${page === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-sky-300 cursor-pointer'} rounded`}
-                        onClick={handleNextPage}
-                        disabled={page === totalPages}
-                    >
-                        <i className="fa-solid fa-angle-right"></i>
-                    </button>
-                </div>
-            }
-            {!showFull &&
-                <div className='mt-5 flex justify-end'>
-                    <Link to="/students" className="text-black inline-block text-md bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">
-                        <span className='flex items-center gap-1'>See more <i className="fa-solid fa-angles-right"></i></span>
-                    </Link>
-                </div>
-            }
+            <Pagination showFull={showFull} page={page} totalPages={totalPages} seeMoreURL='/students' onPageChange={setPage} />
+            {showModal && (
+                <FormModal show={showModal} onClose={handleCloseModal}>
+                    <StudentForm student={selectedStudent} onSubmit={handleFormSubmit} />
+                </FormModal>
+            )}
         </div>
     )
 }
 
-export default StudentList
+export default StudentList;
