@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 
@@ -11,10 +11,12 @@ const LeftMenu = () => {
                 <span className='text-xl text-white'>Logged in: {user?.name}</span>
                 <span className='text-white text-base'><i className="fa fa-envelope"></i> email: {user?.email}</span>
             </div>
-            <div className='px-5 py-8 flex flex-col gap-4 bg-gray-300 prose prose-p:m-0 prose-p:shadow prose-p:px-3 prose-p:py-2 prose-p:bg-sky-700 prose-p:text-white hover:prose-p:bg-sky-100 hover:prose-p:text-black prose-p:rounded-md prose-p:no-underline prose-p:cursor-pointer prose-p:font-semibold'>
-                <p>Students</p>
-                <p>Teachers</p>
-                <p>Classrooms</p>
+            <div className='px-5 py-8 flex flex-col gap-4 bg-gray-300 prose prose-a:m-0 prose-a:shadow prose-a:px-3 prose-a:py-2 prose-a:bg-sky-700
+             prose-a:text-white hover:prose-a:bg-sky-100 hover:prose-a:text-black prose-a:rounded-md prose-a:no-underline prose-a:cursor-pointer
+              prose-a:font-semibold'>
+                <Link to='/students'>Students</Link>
+                <Link to='/teachers'>Teachers</Link>
+                <Link to='/classrooms'>Classrooms</Link>
                 <div className='flex flex-col'>
                     <span className='font-bold'><i className="fa-solid fa-gear"></i> System Settings</span>
                     <div className='mt-3'>
