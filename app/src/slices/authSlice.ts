@@ -10,7 +10,7 @@ interface Auth {
 const initialState: Auth = {
     token: localStorage.getItem('token') || '',
     isAuthenticated: false,
-    loading: true,
+    loading: false,
     user: null,
 }
 
@@ -60,10 +60,13 @@ const authSlice = createSlice({
                 isAuthenticated: false,
                 loading: false,
             };
+        },
+        setLoading: (state, action: PayloadAction<boolean>) => {
+            state.loading = action.payload;
         }
     },
 });
 
-export const { loginSuccess, loginError, loadUser, authError, logout } = authSlice.actions;
+export const { loginSuccess, loginError, loadUser, authError, logout, setLoading } = authSlice.actions;
 
 export default authSlice.reducer;

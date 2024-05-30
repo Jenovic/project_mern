@@ -24,24 +24,18 @@ const Navbar = () => {
             <div className="container mx-auto flex items-center justify-between">
                 {/* Logo on the left */}
                 <div className="text-black text-3xl font-semibold">
-                    <a href="/" className="flex items-center gap-3"><img src={book} alt="Logo" />SMS</a>
+                    <a href="/" className="flex items-center gap-3"><img src={book} alt="Logo" /><span>SMS<span className='text-xs pl-1'>by @OutData</span></span></a>
                 </div>
 
                 {/* Links on the right */}
-                <div className="relative">
-
-                    <span className='text-black bg-sky-700 px-[9px] py-1 rounded-full cursor-pointer' id="dropdownNavMenu" onClick={toggleDropdown}><i className='fa-solid fa-user'></i></span>
-                    {dropdownVisible && (
-                        <ul
-                            id="dropdown"
-                            className="absolute right-0 mt-2 w-48 z-[200] bg-white border border-gray-200 rounded shadow-lg divide-y"
-                        >
-                            {!isAuthenticated && (
-                                <li className="px-4 py-2 relative hover:bg-gray-100">
-                                    <Link to="/login">Log in</Link>
-                                </li>
-                            )}
-                            {isAuthenticated && (
+                {isAuthenticated && (
+                    <div className="relative">
+                        <span className='text-black bg-sky-700 px-[9px] py-1 rounded-full cursor-pointer' id="dropdownNavMenu" onClick={toggleDropdown}><i className='fa-solid fa-user'></i></span>
+                        {dropdownVisible && (
+                            <ul
+                                id="dropdown"
+                                className="absolute right-0 mt-2 w-48 z-[200] bg-white border border-gray-200 rounded shadow-lg divide-y"
+                            >
                                 <>
                                     <li className="px-4 py-2  hover:bg-gray-100">
                                         <p className='font-medium uppercase text-xs'>Account</p>
@@ -54,10 +48,10 @@ const Navbar = () => {
                                         <a className='cursor-pointer' onClick={handleLogout}>Log out</a>
                                     </li>
                                 </>
-                            )}
-                        </ul>
-                    )}
-                </div>
+                            </ul>
+                        )}
+                    </div>
+                )}
             </div>
         </nav>
     )
