@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setLoading } from '../../slices/authSlice';
 import type { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
-import LeftMenu from './LeftMenu';
+import LeftMenu from '../Nav/LeftMenu';
 import Tiles from './Tiles';
 import StudentList from '../Student/StudentList';
 import TeacherList from '../Teacher/TeacherList';
@@ -42,8 +42,8 @@ const Dashboard = () => {
                                         <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row">Delete <i className="fa-solid fa-trash"></i></p>
                                     </div>
                                 </div>
-                                <StudentList />
-                                <TeacherList />
+                                <StudentList showFull={false} />
+                                <TeacherList showFull={false} />
                                 <ClassroomList />
                             </div>
                         </div>

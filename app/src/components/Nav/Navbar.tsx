@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import book from '../assets/book.svg';
+import book from '../../assets/book.svg';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../store';
-import { logout } from '../slices/authSlice';
+import type { RootState } from '../../store';
+import { logout } from '../../slices/authSlice';
 
 const Navbar = () => {
     const dispatch = useDispatch();

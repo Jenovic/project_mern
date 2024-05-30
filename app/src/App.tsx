@@ -4,7 +4,7 @@ import { loadUser } from './slices/authSlice';
 import { loadUserSvc } from './services/auth';
 import { useDispatch } from 'react-redux';
 import PrivateRoute from './utils/PrivateRoute';
-import Navbar from './components/Navbar';
+import Navbar from './components/Nav/Navbar';
 import SplashScreen from './components/SplashScreen';
 import Login from './components/Login';
 import Alert from './components/Alert';

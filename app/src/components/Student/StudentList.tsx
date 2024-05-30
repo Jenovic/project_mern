@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getStudentsSvc } from '../../services/students';
 import { loadStudents } from '../../slices/studentSlice';
 import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
 
-const StudentList = () => {
+interface StudentProps {
+    showFull: boolean;
+}
+
+const StudentList: React.FC<StudentProps> = ({ showFull }) => {
     const dispatch = useDispatch();
     const students = useSelector((state: RootState) => state.students.students);
     const [page, setPage] = useState(1);
@@ -43,6 +48,8 @@ const StudentList = () => {
         setRowIndex(idx);
     }
 
+    const displayedStudents = showFull ? students : students.slice(0, 5);
+
     return (
         <div className='border-2 p-5 rounded'>
             <h1 className='font-semibold uppercase pb-2'>Students</h1>
@@ -61,7 +68,7 @@ const StudentList = () => {
                         </tr>
                     </thead>
                     <tbody className={`[&>*:nth-child(${rowIndex + 1})]:bg-sky-100`}>
-                        {students.map((student, idx) => (
+                        {displayedStudents.map((student, idx) => (
                             <tr key={student.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx)}>
                                 <td className="px-3">
                                     <span className='flex items-center relative'>
@@ -87,22 +94,31 @@ const StudentList = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="flex justify-between mt-4">
-                <button
-                    className="px-4 py-2 bg-gray-300 rounded"
-                    onClick={handlePreviousPage}
-                    disabled={page === 1}
-                >
-                    Previous
-                </button>
-                <button
-                    className="px-4 py-2 bg-gray-300 rounded"
-                    onClick={handleNextPage}
-                    disabled={page === totalPages}
-                >
-                    Next
-                </button>
-            </div>
+            {showFull &&
+                <div className="flex justify-center mt-4 gap-3">
+                    <button
+                        className={`px-4 py-2 ${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-sky-300 cursor-pointer'} rounded`}
+                        onClick={handlePreviousPage}
+                        disabled={page === 1}
+                    >
+                        <i className="fa-solid fa-angle-left"></i>
+                    </button>
+                    <button
+                        className={`px-4 py-2 ${page === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-sky-300 cursor-pointer'} rounded`}
+                        onClick={handleNextPage}
+                        disabled={page === totalPages}
+                    >
+                        <i className="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+            }
+            {!showFull &&
+                <div className='mt-5 flex justify-end'>
+                    <Link to="/students" className="text-black inline-block text-md bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">
+                        <span className='flex items-center gap-1'>See more <i className="fa-solid fa-angles-right"></i></span>
+                    </Link>
+                </div>
+            }
         </div>
     )
 }
