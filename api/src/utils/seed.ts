@@ -31,6 +31,15 @@ const generateMockStudent = (): IStudent => {
                 phoneNumber: faker.phone.number(),
                 relationshipToStudent: 'Parent',
             },
+            {
+                address: faker.location.streetAddress(),
+                email: faker.internet.email(),
+                name: faker.person.firstName(),
+                middleName: faker.person.firstName(),
+                surname: faker.person.lastName(),
+                phoneNumber: faker.phone.number(),
+                relationshipToStudent: 'Parent',
+            },
         ],
         date: faker.date.past(),
     });
