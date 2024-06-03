@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateStudentSvc } from '../../services/students';
+import { setAlert } from '../../slices/alertSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 interface StudentFormProps {
     student: any;
@@ -6,7 +10,23 @@ interface StudentFormProps {
 }
 
 const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
-    const [formData, setFormData] = useState(student);
+
+    const dispatch = useDispatch();
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const initialFormData = {
+        ...student,
+        dob: student.dob ? formatDate(student.dob) : ''
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -16,22 +36,32 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        onSubmit(formData);
+        try {
+            const response = await updateStudentSvc(student._id, formData);
+            dispatch(setAlert({ id: uuidv4(), message: 'Student updated successfully', type: 'success' }));
+            console.log('Student updated successfully:', response.data);
+        } catch (error: any) {
+            const message = error.msg;
+            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <div className='grid md:grid-cols-2 md:gap-x-5'>
                 <div className="mb-4 grid md:grid-cols-12 items-center">
-                    <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor="name">Name</label>
+                    <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor="name">
+                        Name <span className='text-red-500'>*</span>
+                    </label>
                     <input
                         id="name"
                         name="name"
                         type="text"
                         value={formData.name}
                         onChange={handleChange}
+                        required
                         className=" col-span-9 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
@@ -50,7 +80,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
                 </div>
                 <div className="mb-4 grid md:grid-cols-12 items-center">
                     <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor="surname">
-                        Surname
+                        Surname <span className='text-red-500'>*</span>
                     </label>
                     <input
                         id="surname"
@@ -58,12 +88,13 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
                         type="text"
                         value={formData.surname}
                         onChange={handleChange}
+                        required
                         className=" col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
                 <div className="mb-4 grid md:grid-cols-12 items-center">
                     <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor="dob">
-                        Date of Birth
+                        Date of Birth <span className='text-red-500'>*</span>
                     </label>
                     <input
                         id="dob"
@@ -71,12 +102,13 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
                         type="date"
                         value={formData.dob}
                         onChange={handleChange}
+                        required
                         className=" col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
                 <div className="mb-4 grid md:grid-cols-12 items-center">
                     <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor="address">
-                        Address
+                        Address <span className='text-red-500'>*</span>
                     </label>
                     <input
                         id="address"
@@ -84,6 +116,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit }) => {
                         type="text"
                         value={formData.address}
                         onChange={handleChange}
+                        required
                         className=" col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
                 </div>
