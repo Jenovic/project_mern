@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    /* overflow-y: hidden; */
+}
 
 .alert-success {
     @apply bg-green-200;
@@ -29,5 +32,7 @@
         @apply prose prose-a:no-underline prose-a:cursor-pointer prose-li:p-0 prose-li:m-0;
     }
 
-
+    table td {
+        @apply text-[13px] text-black;
+    }
 }

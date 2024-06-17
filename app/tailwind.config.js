@@ -26,6 +26,9 @@ module.exports = {
     extend: {
       fontFamily: {
         jost: ['Jost', 'sans-serif'],
+      },
+      maxWidth: {
+        '8xl': '90rem',
       }
     },
   },

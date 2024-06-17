@@ -39,7 +39,7 @@ const TeacherList: React.FC<TeacherProps> = ({ showFull }) => {
     const displayedTeachers = showFull ? teachers : teachers.slice(0, 5);
 
     return (
-        <div className='border-2 p-5 rounded'>
+        <div className='border-2 p-5 mb-5 rounded'>
             <h1 className="font-semibold uppercase pb-2">Teachers</h1>
             <div className="relative overflow-x-auto">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
