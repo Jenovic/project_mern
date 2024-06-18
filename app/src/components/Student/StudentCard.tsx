@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getStudentSvc, updateStudentSvc } from '../../services/students';
 import { setAlert } from '../../slices/alertSlice';
+import { setLoading, updateStudent, setUpdateDisabled } from '../../slices/studentSlice';
 import { v4 as uuidv4 } from 'uuid';
+import type { RootState } from '../../store';
+// import GlobalModal from '../Modal/GlobalModal';
 
 interface StudentCardProps {
     student: any;
@@ -13,6 +16,7 @@ interface StudentCardProps {
 interface Field {
     name: string;
     type: string;
+    required: boolean;
 }
 
 const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose }) => {
@@ -34,6 +38,8 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
 
     const [formData, setFormData] = useState(initialFormData);
     const [fields, setFields] = useState<Field[]>([]);
+    // const [showModal, setShowModal] = useState(false);
+    const { updateDisabled } = useSelector((state: RootState) => state.students);
 
     useEffect(() => {
         const getStudentData = async () => {
@@ -49,7 +55,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
             }
         }
         getStudentData();
-    }, [student._id]);
+    }, [student._id, updateDisabled]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -57,6 +63,7 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
             ...formData,
             [name]: value,
         });
+        dispatch(setUpdateDisabled(false));
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,13 +71,34 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
         try {
             const response = await updateStudentSvc(student._id, formData);
             dispatch(setAlert({ id: uuidv4(), message: 'Student updated successfully', type: 'success' }));
+            dispatch(updateStudent(response.data));
             console.log('Student updated successfully:', response.data);
             onClose();
         } catch (error: any) {
             const message = error.msg;
             dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+        } finally {
+            dispatch(setLoading(true));
+            dispatch(setUpdateDisabled(true));
         }
     };
+
+    // const handleCancel = () => {
+    //     if (!updateDisabled) {
+    //         setShowModal(true);
+    //     } else {
+    //         onClose();
+    //     }
+    // };
+
+    // const handleModalSubmit = () => {
+    //     setShowModal(false);
+    //     onClose();
+    // };
+
+    // const handleModalClose = () => {
+    //     setShowModal(false);
+    // };
 
     const determineType = (s: string) => {
         let res = '';
@@ -94,44 +122,60 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div className='grid md:grid-cols-2 md:gap-x-5'>
-                {fields.map((field) => (
-                    <div key={field.name} className="mb-4 grid md:grid-cols-12 items-center">
-                        <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor={field.name}>
-                            {field.name}
-                        </label>
-                        <input
-                            id={field.name}
-                            name={field.name}
-                            type={determineType(field.type)}
-                            value={field.type === 'Date' ? (formData[field.name] || '').split('T')[0] : (formData[field.name] || '')}
-                            onChange={handleChange}
-                            readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'}
-                            className={`col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
+        <>
+            <form onSubmit={handleSubmit}>
+                <div className='grid lg:grid-cols-2 lg:gap-x-5'>
+                    {fields.map((field) => (
+                        <div key={field.name} className="mb-4 grid md:grid-cols-12 items-center">
+                            <label className="block col-span-3 text-gray-700 text-sm text-left font-bold mb-2" htmlFor={field.name}>
+                                {field.name}
+                                <span className='text-red-500'>{field.required && ' *'}</span>
+                            </label>
+                            <input
+                                id={field.name}
+                                name={field.name}
+                                type={determineType(field.type)}
+                                value={field.type === 'Date' ? (formData[field.name] || '').split('T')[0] : (formData[field.name] || '')}
+                                onChange={handleChange}
+                                readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'}
+                                className={`col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
                                  focus:shadow-outline ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified' ? 'bg-gray-200 cursor-not-allowed' : ''
-                                }`}
-                        />
-                    </div>
-                ))}
-            </div>
-            <div>
-                <div className="flex items-center justify-end gap-5">
-                    <button
-                        className="bg-sky-700 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        type="submit"
-                    >
-                        Save
-                    </button>
-                    <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </button>
+                                    }`}
+                            />
+                        </div>
+                    ))}
                 </div>
-            </div>
-        </form>
+                <div>
+                    <div className="flex items-center justify-end gap-5">
+                        <button
+                            className={`bg-sky-700 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-400' : ''}`}
+                            type="submit"
+                            disabled={updateDisabled}
+                        >
+                            Save
+                        </button>
+                        <button
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            onClick={onClose}
+                        // onClick={handleChange}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {/* {showModal && (
+                <GlobalModal
+                    show={showModal}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    title='Edit'
+                    content='Are you sure you want to cancel your changes?'
+                    submitText='Yes'
+                    cancelText='No'
+                ></GlobalModal>
+            )} */}
+        </>
     );
 };
 

@@ -11,6 +11,7 @@ const router = express.Router();
 interface FieldType {
     name: string;
     type: string;
+    required: boolean;
 }
 
 const getFieldTypes = (): FieldType[] => {
@@ -18,6 +19,7 @@ const getFieldTypes = (): FieldType[] => {
     const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
         name: field,
         type: schema[field].instance,
+        required: !!schema[field].isRequired,
     }));
     return fieldTypes;
 };

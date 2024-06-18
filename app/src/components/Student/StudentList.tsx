@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getStudentsSvc } from '../../services/students';
-import { loadStudents } from '../../slices/studentSlice';
+import { loadStudents, setLoading } from '../../slices/studentSlice';
+import { setShowFormModal } from '../../slices/globalSlice';
 import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
@@ -16,12 +17,11 @@ interface StudentProps {
 
 const StudentList: React.FC<StudentProps> = ({ showFull }) => {
     const dispatch = useDispatch();
-    const students = useSelector((state: RootState) => state.students.students);
-    const loading = useSelector((state: RootState) => state.students.loading);
+    const { students, loading } = useSelector((state: RootState) => state.students);
+    const { showFormModal } = useSelector((state: RootState) => state.global);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
-    const [showModal, setShowModal] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
     useEffect(() => {
@@ -33,6 +33,8 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
             } catch (error: any) {
                 const message = error.msg;
                 dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+            } finally {
+                dispatch(setLoading(false));
             }
         }
         loadStudentList();
@@ -44,16 +46,17 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
 
     const handleEditClick = (student: any) => {
         setSelectedStudent(student);
-        setShowModal(true);
+        dispatch(setShowFormModal(true));
     };
 
     const handleCloseModal = () => {
-        setShowModal(false);
+        dispatch(setShowFormModal(false));
         setSelectedStudent(null);
     };
 
-    const handleFormSubmit = (updatedStudent: any) => {
-        setShowModal(false);
+    const handleFormSubmit = () => {
+        dispatch(setShowFormModal(false));
+        dispatch(setLoading(true));
     };
 
     const displayedStudents = showFull ? students : students.slice(0, 5);
@@ -110,8 +113,8 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                         </table>
                     </div>
                     <Pagination showFull={showFull} page={page} totalPages={totalPages} seeMoreURL='/students' onPageChange={setPage} />
-                    {showModal && (
-                        <FormModal student={selectedStudent} show={showModal} onClose={handleCloseModal}>
+                    {showFormModal && (
+                        <FormModal student={selectedStudent} show={showFormModal} onClose={handleCloseModal}>
                             <StudentCard student={selectedStudent} onSubmit={handleFormSubmit} onClose={handleCloseModal} />
                         </FormModal>
                     )}

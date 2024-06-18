@@ -4,13 +4,15 @@ import authReducer from './slices/authSlice';
 import studentReducer from './slices/studentSlice';
 import teacherReducer from './slices/teacherSlice';
 import classroomReducer from './slices/classroomSlice';
+import globalReducer from './slices/globalSlice';
 
 const rootReducer = combineReducers({
     alerts: alertReducer,
     auth: authReducer,
     students: studentReducer,
     teachers: teacherReducer,
-    classrooms: classroomReducer
+    classrooms: classroomReducer,
+    global: globalReducer
 })
 
 const store = configureStore({
