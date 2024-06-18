@@ -8,6 +8,20 @@ import auth from "../middleware/auth";
 
 const router = express.Router();
 
+interface FieldType {
+    name: string;
+    type: string;
+}
+
+const getFieldTypes = (): FieldType[] => {
+    const schema = Student.schema.paths;
+    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
+        name: field,
+        type: schema[field].instance,
+    }));
+    return fieldTypes;
+};
+
 // Define the validation function for a single Responsable object
 const validateResponsable = body('responsables').isObject().custom((responsable, { req }) => {
     // Define custom validation logic for each Responsable object here
@@ -166,7 +180,8 @@ router.get('/:student_id', auth, async (req: Request, res: Response) => {
 
         if (!student) return res.status(404).json({ errors: [{ msg: 'Student does not exist' }] });
 
-        res.status(200).json(student);
+        const fieldTypes = getFieldTypes();
+        res.status(200).json({ student, fieldTypes });
 
     } catch (error: any) {
         console.error(error.message);

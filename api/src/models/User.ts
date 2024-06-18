@@ -17,11 +17,26 @@ const UserSchema = new mongoose.Schema({
     avatar: {
         type: String
     },
-    date: {
+    dateCreated: {
+        type: Date,
+        default: Date.now
+    },
+    dateModified: {
         type: Date,
         default: Date.now
     }
 });
+
+export interface IUser extends Document {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    email: string;
+    password: string;
+    avartar?: string;
+    address: string;
+    dateCreated: Date;
+    dateModified: Date;
+}
 
 const User = mongoose.model('user', UserSchema);
 

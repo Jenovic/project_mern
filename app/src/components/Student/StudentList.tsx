@@ -6,7 +6,7 @@ import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
 import Pagination from '../Pagination/Pagination';
-import StudentForm from './StudentForm';
+import StudentCard from './StudentCard';
 import FormModal from '../Modal/FormModal';
 
 interface StudentProps {
@@ -108,8 +108,8 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
             </div>
             <Pagination showFull={showFull} page={page} totalPages={totalPages} seeMoreURL='/students' onPageChange={setPage} />
             {showModal && (
-                <FormModal show={showModal} onClose={handleCloseModal}>
-                    <StudentForm student={selectedStudent} onSubmit={handleFormSubmit} />
+                <FormModal student={selectedStudent} show={showModal} onClose={handleCloseModal}>
+                    <StudentCard student={selectedStudent} onSubmit={handleFormSubmit} onClose={handleCloseModal} />
                 </FormModal>
             )}
         </div>

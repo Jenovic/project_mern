@@ -10,8 +10,30 @@ export const getStudentsSvc = async (page = 1, limit = 10) => {
             limit
         }
     };
-    const res = await axios.get('api/students', config);
-    return res;
+
+    try {
+        const res = await axios.get('api/students', config);
+        return res;
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        throw error;
+    }
+}
+
+export const getStudentSvc = async (studentId: number) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token,
+        },
+    };
+
+    try {
+        const res = await axios.get(`api/students/${studentId}`, config);
+        return res;
+    } catch (error) {
+        console.error('Error fetching student:', error);
+        throw error;
+    }
 }
 
 export const updateStudentSvc = async (studentId: number, studentData: {}) => {

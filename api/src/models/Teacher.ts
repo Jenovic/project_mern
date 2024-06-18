@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IClass } from './Class';
+import { IUser } from './User';
 
 // Define the Teacher schema
 const TeacherSchema = new Schema({
@@ -11,7 +12,8 @@ const TeacherSchema = new Schema({
     phoneNumber: { type: String, required: true },
     email: String,
     class: { type: Schema.Types.ObjectId, ref: 'Class' },
-    date: { type: Date, default: Date.now }
+    dateCreated: { type: Date, default: Date.now },
+    dateModified: { type: Date, default: Date.now },
 });
 
 export interface ITeacher extends Document {
@@ -23,7 +25,8 @@ export interface ITeacher extends Document {
     phoneNumber: string;
     email?: string;
     class?: IClass;
-    date: Date;
+    dateCreated: Date;
+    dateModified: Date;
 }
 
 const TeacherModel = mongoose.model<ITeacher>('teacher', TeacherSchema);
