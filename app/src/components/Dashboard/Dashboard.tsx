@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setLoading } from '../../slices/authSlice';
+import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import LeftMenu from '../Nav/LeftMenu';
@@ -12,12 +10,7 @@ import Loader from '../Loader';
 
 const Dashboard = () => {
     const { loading } = useSelector((state: RootState) => state.auth);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        dispatch(setLoading(false));
-    }, []);
 
     return (
         <>

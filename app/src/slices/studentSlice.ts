@@ -23,10 +23,12 @@ interface Student {
 
 interface StudentState {
     students: Student[];
+    loading: boolean,
 }
 
 const initialState: StudentState = {
-    students: []
+    students: [],
+    loading: true,
 };
 
 const studentSlice = createSlice({
@@ -37,6 +39,7 @@ const studentSlice = createSlice({
             return {
                 ...state,
                 students: action.payload,
+                loading: false,
             }
         },
         updateStudent: (state, action: PayloadAction<Student>) => { },
