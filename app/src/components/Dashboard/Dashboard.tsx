@@ -12,6 +12,10 @@ const Dashboard = () => {
     const { loading } = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
 
+    const handleEdit = () => {
+
+    }
+
     return (
         <>
             {loading ? (
@@ -31,7 +35,7 @@ const Dashboard = () => {
                                 <div className='flex pl-4 gap-4 items-center my-5'>
                                     <span>All Locations | options:</span>
                                     <div className='flex gap-4 prose-sys prose-p:cursor-pointer prose-p:m-0 prose-p:py-1 prose-p:px-2'>
-                                        <p className='hover:bg-sky-200 hover:shadow' title="Edit the selected row">Edit <i className="fa-regular fa-pen-to-square"></i></p>
+                                        <p className='hover:bg-sky-200 hover:shadow' title="Edit the selected row" onClick={handleEdit}>Edit <i className="fa-regular fa-pen-to-square"></i></p>
                                         <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row">Delete <i className="fa-solid fa-trash"></i></p>
                                     </div>
                                 </div>

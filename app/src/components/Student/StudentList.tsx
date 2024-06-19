@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getStudentsSvc } from '../../services/students';
-import { loadStudents, setLoading } from '../../slices/studentSlice';
+import { loadStudents, setLoading, setSelectedStudent } from '../../slices/studentSlice';
 import { setShowFormModal } from '../../slices/globalSlice';
 import { setAlert } from '../../slices/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,12 +17,11 @@ interface StudentProps {
 
 const StudentList: React.FC<StudentProps> = ({ showFull }) => {
     const dispatch = useDispatch();
-    const { students, loading } = useSelector((state: RootState) => state.students);
+    const { students, loading, selectedStudent } = useSelector((state: RootState) => state.students);
     const { showFormModal } = useSelector((state: RootState) => state.global);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
-    const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
     useEffect(() => {
         const loadStudentList = async () => {
@@ -40,12 +39,12 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
         loadStudentList();
     }, [page, loading, showFull]);
 
-    const handleRowSelect = (idx: number) => {
+    const handleRowSelect = (idx: number, student: any) => {
         setRowIndex(idx);
+        dispatch(setSelectedStudent(student));
     }
 
-    const handleEditClick = (student: any) => {
-        setSelectedStudent(student);
+    const handleEditClick = () => {
         dispatch(setShowFormModal(true));
     };
 
@@ -84,13 +83,13 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                             </thead>
                             <tbody className={`[&>*:nth-child(${rowIndex + 1})]:bg-sky-100`}>
                                 {displayedStudents.map((student, idx) => (
-                                    <tr key={student.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx)}>
+                                    <tr key={student.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx, student)}>
                                         <td className="px-3">
                                             <span className='flex items-center relative'>
                                                 <span className='pr-2'>{(page - 1) * 10 + idx + 1}</span>
                                                 <i
                                                     className="fa-regular fa-pen-to-square text-lg px-2 py-3 cursor-pointer hover:bg-sky-500 hover:text-white"
-                                                    onClick={() => handleEditClick(student)}
+                                                    onClick={() => handleEditClick()}
                                                 ></i>
                                             </span>
                                         </td>

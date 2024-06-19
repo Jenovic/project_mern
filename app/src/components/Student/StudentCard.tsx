@@ -5,7 +5,7 @@ import { setAlert } from '../../slices/alertSlice';
 import { setLoading, updateStudent, setUpdateDisabled } from '../../slices/studentSlice';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
-// import GlobalModal from '../Modal/GlobalModal';
+import { determineType } from '../../utils/helpers';
 
 interface StudentCardProps {
     student: any;
@@ -38,7 +38,6 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
 
     const [formData, setFormData] = useState(initialFormData);
     const [fields, setFields] = useState<Field[]>([]);
-    // const [showModal, setShowModal] = useState(false);
     const { updateDisabled } = useSelector((state: RootState) => state.students);
 
     useEffect(() => {
@@ -72,7 +71,6 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
             const response = await updateStudentSvc(student._id, formData);
             dispatch(setAlert({ id: uuidv4(), message: 'Student updated successfully', type: 'success' }));
             dispatch(updateStudent(response.data));
-            console.log('Student updated successfully:', response.data);
             onClose();
         } catch (error: any) {
             const message = error.msg;
@@ -82,44 +80,6 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
             dispatch(setUpdateDisabled(true));
         }
     };
-
-    // const handleCancel = () => {
-    //     if (!updateDisabled) {
-    //         setShowModal(true);
-    //     } else {
-    //         onClose();
-    //     }
-    // };
-
-    // const handleModalSubmit = () => {
-    //     setShowModal(false);
-    //     onClose();
-    // };
-
-    // const handleModalClose = () => {
-    //     setShowModal(false);
-    // };
-
-    const determineType = (s: string) => {
-        let res = '';
-        switch (s) {
-            case 'String':
-                res = 'text';
-                break;
-            case 'Date':
-                res = 'date';
-                break;
-            case 'Number':
-                res = 'number';
-                break;
-            case 'ObjectId':
-                res = 'text';
-                break;
-            default:
-                res = 'text';
-        }
-        return res;
-    }
 
     return (
         <>
@@ -157,24 +117,12 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, onSubmit, onClose })
                         <button
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             onClick={onClose}
-                        // onClick={handleChange}
                         >
                             Cancel
                         </button>
                     </div>
                 </div>
             </form>
-            {/* {showModal && (
-                <GlobalModal
-                    show={showModal}
-                    onClose={handleModalClose}
-                    onSubmit={handleModalSubmit}
-                    title='Edit'
-                    content='Are you sure you want to cancel your changes?'
-                    submitText='Yes'
-                    cancelText='No'
-                ></GlobalModal>
-            )} */}
         </>
     );
 };

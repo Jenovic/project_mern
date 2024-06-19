@@ -25,12 +25,14 @@ interface StudentState {
     students: Student[];
     loading: boolean,
     updateDisabled: boolean,
+    selectedStudent: any,
 }
 
 const initialState: StudentState = {
     students: [],
     loading: true,
     updateDisabled: true,
+    selectedStudent: null,
 };
 
 const studentSlice = createSlice({
@@ -52,10 +54,11 @@ const studentSlice = createSlice({
         },
         deleteStudent: (state, action: PayloadAction<Student>) => { },
         setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
-        setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload }
+        setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
+        setSelectedStudent: (state, action: PayloadAction<any>) => { state.selectedStudent = action.payload }
     }
 });
 
-export const { loadStudents, updateStudent, deleteStudent, setLoading, setUpdateDisabled } = studentSlice.actions;
+export const { loadStudents, updateStudent, deleteStudent, setLoading, setUpdateDisabled, setSelectedStudent } = studentSlice.actions;
 
 export default studentSlice.reducer;
