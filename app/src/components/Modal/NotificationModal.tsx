@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface GlobalModalProps {
+interface NotificationModalProps {
     show: boolean;
     onClose: () => void;
     onSubmit: () => void;
@@ -10,7 +10,7 @@ interface GlobalModalProps {
     cancelText: string;
 }
 
-const GlobalModal: React.FC<GlobalModalProps> = ({ show, onClose, onSubmit, title, content, submitText, cancelText }) => {
+const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, onSubmit, title, content, submitText, cancelText }) => {
     if (!show) return null;
 
     return (
@@ -51,4 +51,4 @@ const GlobalModal: React.FC<GlobalModalProps> = ({ show, onClose, onSubmit, titl
     )
 }
 
-export default GlobalModal;
+export default NotificationModal;

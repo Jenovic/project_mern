@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
 import Pagination from '../Pagination/Pagination';
 import StudentCard from './StudentCard';
-import FormModal from '../Modal/FormModal';
 import Loader from '../Loader';
 
 interface StudentProps {
@@ -17,8 +16,7 @@ interface StudentProps {
 
 const StudentList: React.FC<StudentProps> = ({ showFull }) => {
     const dispatch = useDispatch();
-    const { students, loading, selectedStudent } = useSelector((state: RootState) => state.students);
-    const { showFormModal } = useSelector((state: RootState) => state.global);
+    const { students, loading } = useSelector((state: RootState) => state.students);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
@@ -46,15 +44,6 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
 
     const handleEditClick = () => {
         dispatch(setShowFormModal(true));
-    };
-
-    const handleCloseModal = () => {
-        dispatch(setShowFormModal(false));
-        setSelectedStudent(null);
-    };
-
-    const handleFormSubmit = () => {
-        dispatch(setShowFormModal(false));
         dispatch(setLoading(true));
     };
 
@@ -112,11 +101,7 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                         </table>
                     </div>
                     <Pagination showFull={showFull} page={page} totalPages={totalPages} seeMoreURL='/students' onPageChange={setPage} />
-                    {showFormModal && (
-                        <FormModal student={selectedStudent} show={showFormModal} onClose={handleCloseModal}>
-                            <StudentCard student={selectedStudent} onSubmit={handleFormSubmit} onClose={handleCloseModal} />
-                        </FormModal>
-                    )}
+                    <StudentCard />
                 </div>
             )}
         </>
