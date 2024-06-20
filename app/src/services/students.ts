@@ -52,3 +52,19 @@ export const updateStudentSvc = async (studentId: number, studentData: {}) => {
         throw error;
     }
 }
+
+export const deleteStudentSvc = async (studentId: number) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token,
+        },
+    };
+
+    try {
+        const res = await axios.delete(`api/students/${studentId}`, config);
+        return res;
+    } catch (error) {
+        console.error('Error deleting student:', error);
+        throw error;
+    }
+}
