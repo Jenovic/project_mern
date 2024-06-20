@@ -17,7 +17,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, on
         <>
             {show && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-1/2 shadow-lg rounded-md bg-white">
+                    <div className="relative top-20 mx-auto p-5 border w-1/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between">
                                 <span className='font-bold uppercase'>{title}</span>
@@ -34,7 +34,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, on
                             <div>
                                 <div className="flex items-center justify-end gap-5">
                                     <button
-                                        className='bg-sky-700 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                                        className='bg-sky-600 hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
                                         onClick={onSubmit}
                                     >
                                         {submitText}

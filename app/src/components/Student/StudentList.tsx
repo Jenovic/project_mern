@@ -26,6 +26,7 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
             try {
                 const res = await getStudentsSvc(page);
                 dispatch(loadStudents(res.data.students));
+                dispatch(setSelectedStudent(res.data.students[0]));
                 setTotalPages(res.data.pages);
             } catch (error: any) {
                 const message = error.msg;
@@ -44,7 +45,6 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
 
     const handleEditClick = () => {
         dispatch(setShowFormModal(true));
-        dispatch(setLoading(true));
     };
 
     const displayedStudents = showFull ? students : students.slice(0, 5);

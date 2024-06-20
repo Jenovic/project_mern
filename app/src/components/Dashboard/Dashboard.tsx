@@ -1,6 +1,8 @@
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
+import { setShowFormModal } from '../../slices/globalSlice';
 import LeftMenu from '../Nav/LeftMenu';
 import Tiles from './Tiles';
 import StudentList from '../Student/StudentList';
@@ -11,9 +13,10 @@ import Loader from '../Loader';
 const Dashboard = () => {
     const { loading } = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleEdit = () => {
-
+        dispatch(setShowFormModal(true));
     }
 
     return (

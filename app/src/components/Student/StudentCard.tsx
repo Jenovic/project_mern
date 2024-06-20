@@ -15,6 +15,16 @@ interface Field {
     required: boolean;
 }
 
+interface FormData {
+    [key: string]: string | undefined;
+    name?: string;
+    middleName?: string;
+    surname?: string;
+    dob?: string;
+    address?: string;
+    phoneNumber?: string
+}
+
 const StudentCard = () => {
 
     const dispatch = useDispatch();
@@ -29,16 +39,19 @@ const StudentCard = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const initialFormData = selectedStudent
-        ? {
-            ...selectedStudent,
-            dob: selectedStudent.dob ? formatDate(selectedStudent.dob) : '',
-        }
-        : {};
-
-    const [formData, setFormData] = useState(initialFormData);
+    const [formData, setFormData] = useState<FormData>({});
     const [fields, setFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+
+    useEffect(() => {
+        if (selectedStudent) {
+            const initialFormData = {
+                ...selectedStudent,
+                dob: selectedStudent.dob ? formatDate(selectedStudent.dob) : '',
+            };
+            setFormData(initialFormData);
+        }
+    }, [selectedStudent]);
 
     useEffect(() => {
         const getStudentData = async () => {
@@ -123,7 +136,7 @@ const StudentCard = () => {
                                     <div>
                                         <div className="flex items-center justify-end gap-5">
                                             <button
-                                                className={`bg-sky-700 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-400' : ''}`}
+                                                className={` text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
                                                 type="submit"
                                                 disabled={updateDisabled}
                                             >
@@ -149,10 +162,10 @@ const StudentCard = () => {
                     show={showNotifModal}
                     onClose={handleCloseNotifModal}
                     onSubmit={handleSubmit}
-                    title='Edit'
-                    content='Are you sure you want to edit this?'
-                    submitText='Yes'
-                    cancelText='No'
+                    title='Edit Student'
+                    content='Save your changes and update the record? Otherwise your changes will not apply'
+                    submitText='Save and Update'
+                    cancelText="Don't save"
                 />
             )}
         </>
