@@ -33,6 +33,7 @@ const StudentList: React.FC<StudentProps> = ({ showFull }) => {
                 dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
             } finally {
                 dispatch(setLoading(false));
+                setRowIndex(0);
             }
         }
         loadStudentList();

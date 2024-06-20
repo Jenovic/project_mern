@@ -100,6 +100,7 @@ const StudentCard = () => {
         if (updateDisabled) {
             dispatch(setShowFormModal(false));
             dispatch(setSelectedStudent(null));
+            dispatch(setLoading(true));
         } else {
             setShowNotifModal(true);
         }
