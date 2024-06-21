@@ -4,6 +4,21 @@ import Teacher from "../models/Teacher";
 import auth from "../middleware/auth";
 
 const router = express.Router();
+interface FieldType {
+    name: string;
+    type: string;
+    required: boolean;
+}
+
+const getFieldTypes = (): FieldType[] => {
+    const schema = Teacher.schema.paths;
+    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
+        name: field,
+        type: schema[field].instance,
+        required: !!schema[field].isRequired,
+    }));
+    return fieldTypes;
+};
 
 // @route POST api/teachers
 // @desc  Register teacher
@@ -102,7 +117,8 @@ router.get('/:teacher_id', auth, async (req: Request, res: Response) => {
 
         if (!teacher) return res.status(404).json({ errors: [{ msg: 'Teacher does not exist' }] });
 
-        res.status(200).json(teacher);
+        const fieldTypes = getFieldTypes();
+        res.status(200).json({ teacher, fieldTypes });
 
     } catch (error: any) {
         console.error(error.message);

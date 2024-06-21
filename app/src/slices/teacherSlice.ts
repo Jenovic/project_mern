@@ -12,10 +12,18 @@ interface Teacher {
 
 interface TeacherState {
     teachers: Teacher[];
+    loading: boolean,
+    updateDisabled: boolean,
+    selectedTeacher: any,
+    teacherLoading: boolean,
 }
 
 const initialState: TeacherState = {
-    teachers: []
+    teachers: [],
+    loading: true,
+    updateDisabled: true,
+    selectedTeacher: null,
+    teacherLoading: false,
 };
 
 const teacherSlice = createSlice({
@@ -28,11 +36,20 @@ const teacherSlice = createSlice({
                 teachers: action.payload,
             }
         },
-        updateTeacher: (state, action: PayloadAction<Teacher>) => { },
+        updateTeacher: (state, action: PayloadAction<Teacher>) => {
+            return {
+                ...state,
+                loading: false,
+            }
+        },
         deleteTeacher: (state, action: PayloadAction<Teacher>) => { },
+        setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
+        setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
+        setSelectedTeacher: (state, action: PayloadAction<any>) => { state.selectedTeacher = action.payload },
+        setTeacherLoading: (state, action: PayloadAction<boolean>) => { state.teacherLoading = action.payload; },
     }
 });
 
-export const { loadTeachers, updateTeacher, deleteTeacher } = teacherSlice.actions;
+export const { loadTeachers, updateTeacher, deleteTeacher, setLoading, setUpdateDisabled, setSelectedTeacher, setTeacherLoading } = teacherSlice.actions;
 
 export default teacherSlice.reducer;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface PaginationProps {
     showFull: boolean;
@@ -7,9 +7,12 @@ interface PaginationProps {
     totalPages: number;
     seeMoreURL: string;
     onPageChange: (page: number) => void;
+    setLoading: (loading: boolean) => any;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ showFull, page, totalPages, seeMoreURL, onPageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({ showFull, page, totalPages, seeMoreURL, onPageChange, setLoading }) => {
+    const navigate = useNavigate();
+
     const handleNextPage = () => {
         if (page < totalPages) {
             onPageChange(page + 1);
@@ -21,6 +24,12 @@ const Pagination: React.FC<PaginationProps> = ({ showFull, page, totalPages, see
             onPageChange(page - 1);
         }
     };
+
+    const handleClick = () => {
+        setLoading(true);
+        navigate(seeMoreURL);
+    }
+
     return (
         <>
             {showFull &&
@@ -43,9 +52,9 @@ const Pagination: React.FC<PaginationProps> = ({ showFull, page, totalPages, see
             }
             {!showFull &&
                 <div className='mt-5 flex justify-end'>
-                    <Link to={seeMoreURL} className="text-black inline-block text-md bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">
+                    <a className="text-black inline-block text-md bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500 cursor-pointer" onClick={() => handleClick()}>
                         <span className='flex items-center gap-1'>See more <i className="fa-solid fa-angles-right"></i></span>
-                    </Link>
+                    </a>
                 </div>
             }
         </>
