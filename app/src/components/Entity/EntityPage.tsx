@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setShowFormModal } from "../../slices/globalSlice";
+import { setShowEditModal, setShowAddModal } from "../../slices/globalSlice";
 import { setAlert } from "../../slices/alertSlice";
 import { v4 as uuidv4 } from 'uuid';
 import BackButton from "../Nav/BackButton";
@@ -34,11 +34,15 @@ const EntityPage: React.FC<EntityPageProps> = ({
     }, []);
 
     const handleEdit = () => {
-        dispatch(setShowFormModal(true));
+        dispatch(setShowEditModal(true));
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         setShowNotifModal(true);
+    }
+
+    const handleAdd = () => {
+        dispatch(setShowAddModal(true));
     }
 
     const handleCloseNotifModal = () => {
@@ -67,6 +71,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                     <div className='flex gap-4 prose-sys prose-p:cursor-pointer prose-p:m-0 prose-p:py-1 prose-p:px-2'>
                         <p className='hover:bg-sky-200 hover:shadow' title="Edit the selected row" onClick={handleEdit}>Edit <i className="fa-regular fa-pen-to-square"></i></p>
                         <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row" onClick={handleDelete}>Delete <i className="fa-solid fa-trash"></i></p>
+                        <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row" onClick={handleAdd}>Add <i className="fa-solid fa-plus"></i></p>
                     </div>
                 </div>
                 <EntityListComponent showFull={true} />

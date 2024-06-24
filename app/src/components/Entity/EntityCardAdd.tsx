@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
-import { setShowEditModal, setUpdateDisabled } from '../../slices/globalSlice';
+import { setShowAddModal, setAddDisabled } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
 import NotificationModal from '../Modal/NotificationModal';
@@ -25,25 +25,19 @@ interface FormData {
 
 interface EntityCardProps {
     entityName: string;
-    fetchSvc: (id: number) => Promise<any>;
-    updateSvc: (id: number, formData: FormData) => Promise<any>;
-    updateEntity: (entity: any) => any;
+    addSvc: (formData: FormData) => Promise<any>;
+    addEntity: (entity: any) => any;
     setLoading: (loading: boolean) => any;
-    setSelectedEntity: (entity: any) => any;
-    selectedEntity: any;
 }
 
-const EntityCard: React.FC<EntityCardProps> = ({
+const EntityCardAdd: React.FC<EntityCardProps> = ({
     entityName,
-    fetchSvc,
-    updateSvc,
-    updateEntity,
+    addSvc,
+    addEntity,
     setLoading,
-    setSelectedEntity,
-    selectedEntity,
 }) => {
     const dispatch = useDispatch();
-    const { showEditModal, updateDisabled } = useSelector((state: RootState) => state.global);
+    const { showAddModal, addDisabled } = useSelector((state: RootState) => state.global);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -57,33 +51,33 @@ const EntityCard: React.FC<EntityCardProps> = ({
     const [fields, setFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
 
-    useEffect(() => {
-        if (selectedEntity) {
-            const initialFormData = {
-                ...selectedEntity,
-                dob: selectedEntity.dob ? formatDate(selectedEntity.dob) : '',
-            };
-            setFormData(initialFormData);
-        }
-    }, [selectedEntity]);
+    // useEffect(() => {
+    //     if (selectedEntity) {
+    //         const initialFormData = {
+    //             ...selectedEntity,
+    //             dob: selectedEntity.dob ? formatDate(selectedEntity.dob) : '',
+    //         };
+    //         setFormData(initialFormData);
+    //     }
+    // }, [selectedEntity]);
 
-    useEffect(() => {
-        const getEntityData = async () => {
-            if (selectedEntity) {
-                try {
-                    const response = await fetchSvc(selectedEntity._id);
-                    const filteredFields = response.data.fieldTypes.filter(
-                        (field: Field) => field.name !== '__v' && field.name !== 'responsables'
-                    );
-                    setFields(filteredFields);
-                } catch (error: any) {
-                    const message = error.msg;
-                    dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-                }
-            }
-        }
-        getEntityData();
-    }, [selectedEntity, updateDisabled, showEditModal]);
+    // useEffect(() => {
+    //     const getEntityData = async () => {
+    //         if (selectedEntity) {
+    //             try {
+    //                 const response = await fetchSvc(selectedEntity._id);
+    //                 const filteredFields = response.data.fieldTypes.filter(
+    //                     (field: Field) => field.name !== '__v' && field.name !== 'responsables'
+    //                 );
+    //                 setFields(filteredFields);
+    //             } catch (error: any) {
+    //                 const message = error.msg;
+    //                 dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+    //             }
+    //         }
+    //     }
+    //     getEntityData();
+    // }, [selectedEntity, updateDisabled, showFormModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -91,56 +85,56 @@ const EntityCard: React.FC<EntityCardProps> = ({
             ...formData,
             [name]: value,
         });
-        dispatch(setUpdateDisabled(false));
+        // dispatch(setUpdateDisabled(false));
     };
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
-        if (e) e.preventDefault();
-        try {
-            const response = await updateSvc(selectedEntity._id, formData);
-            dispatch(setAlert({ id: uuidv4(), message: `${entityName} updated successfully`, type: 'success' }));
-            dispatch(updateEntity(response.data));
-            dispatch(setShowEditModal(false));
-        } catch (error: any) {
-            const message = error.msg;
-            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-        } finally {
-            dispatch(setLoading(true));
-            dispatch(setUpdateDisabled(true));
-        }
+        // if (e) e.preventDefault();
+        // try {
+        //     const response = await updateSvc(selectedEntity._id, formData);
+        //     dispatch(setAlert({ id: uuidv4(), message: `${entityName} updated successfully`, type: 'success' }));
+        //     dispatch(updateEntity(response.data));
+        //     dispatch(setShowFormModal(false));
+        // } catch (error: any) {
+        //     const message = error.msg;
+        //     dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+        // } finally {
+        //     dispatch(setLoading(true));
+        //     dispatch(setUpdateDisabled(true));
+        // }
     };
 
     const handleCloseModal = () => {
-        if (updateDisabled) {
-            dispatch(setShowEditModal(false));
-            dispatch(setSelectedEntity(null));
-            dispatch(setLoading(true));
-            dispatch(setUpdateDisabled(true));
-        } else {
-            setShowNotifModal(true);
-        }
+        // if (updateDisabled) {
+        //     dispatch(setShowFormModal(false));
+        //     dispatch(setSelectedEntity(null));
+        //     dispatch(setLoading(true));
+        //     dispatch(setUpdateDisabled(true));
+        // } else {
+        //     setShowNotifModal(true);
+        // }
     };
 
     const handleCloseNotifModal = () => {
-        setShowNotifModal(false);
-        dispatch(setShowEditModal(false));
-        dispatch(setSelectedEntity(null));
-        dispatch(setUpdateDisabled(true));
-        dispatch(setLoading(true));
+        // setShowNotifModal(false);
+        // dispatch(setShowFormModal(false));
+        // dispatch(setSelectedEntity(null));
+        // dispatch(setUpdateDisabled(true));
+        // dispatch(setLoading(true));
     };
 
-    if (!selectedEntity) {
-        return null;
-    }
+    // if (!selectedEntity) {
+    //     return null;
+    // }
 
     return (
         <>
-            {showEditModal && selectedEntity && (
+            {showAddModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
                     <div className="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between px-5">
-                                <span className='font-bold uppercase'>({entityName.toUpperCase()}) {selectedEntity.name} {selectedEntity.middleName} {selectedEntity.surname} </span>
+                                <span className='font-bold uppercase'>({entityName.toUpperCase()})</span>
                                 <button
                                     className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700"
                                     onClick={() => handleCloseModal()}
@@ -158,9 +152,9 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                     <div>
                                         <div className="flex items-center justify-end gap-5">
                                             <button
-                                                className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
+                                                className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${addDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
                                                 type="submit"
-                                                disabled={updateDisabled}
+                                                disabled={addDisabled}
                                             >
                                                 Save
                                             </button>
@@ -194,4 +188,4 @@ const EntityCard: React.FC<EntityCardProps> = ({
     );
 }
 
-export default EntityCard;
+export default EntityCardAdd;

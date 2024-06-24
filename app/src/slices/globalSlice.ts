@@ -1,25 +1,31 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface GlobalState {
-    showFormModal: boolean;
+    showEditModal: boolean;
+    showAddModal: boolean;
     updateDisabled: boolean;
+    addDisabled: boolean;
 }
 
 const initialState: GlobalState = {
-    showFormModal: false,
+    showEditModal: false,
+    showAddModal: false,
     updateDisabled: true,
+    addDisabled: true,
 };
 
 const globalSlice = createSlice({
     name: 'global',
     initialState,
     reducers: {
-        setShowFormModal: (state, action: PayloadAction<boolean>) => { state.showFormModal = action.payload; },
+        setShowEditModal: (state, action: PayloadAction<boolean>) => { state.showEditModal = action.payload; },
+        setShowAddModal: (state, action: PayloadAction<boolean>) => { state.showAddModal = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
+        setAddDisabled: (state, action: PayloadAction<boolean>) => { state.addDisabled = action.payload },
     }
 });
 
-export const { setShowFormModal, setUpdateDisabled } = globalSlice.actions;
+export const { setShowEditModal, setShowAddModal, setUpdateDisabled, setAddDisabled } = globalSlice.actions;
 
 export default globalSlice.reducer;
 

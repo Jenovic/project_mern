@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
-import { setShowFormModal } from '../../slices/globalSlice';
+import { setShowEditModal } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import Pagination from '../Pagination/Pagination';
 import Loader from '../Loader';
@@ -62,7 +62,7 @@ const EntityList: React.FC<EntityListProps> = ({
     };
 
     const handleEditClick = () => {
-        dispatch(setShowFormModal(true));
+        dispatch(setShowEditModal(true));
     };
 
     const displayedEntities = showFull ? entities : entities.slice(0, 5);

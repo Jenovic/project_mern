@@ -36,6 +36,23 @@ export const getStudentSvc = async (studentId: number) => {
     }
 }
 
+export const addStudentSvc = async (studentData: {}) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token,
+            'Content-Type': 'application/json'
+        },
+    };
+
+    try {
+        const res = await axios.post('api/students/', studentData, config);
+        return res;
+    } catch (error) {
+        console.error('Error adding student:', error);
+        throw error;
+    }
+}
+
 export const updateStudentSvc = async (studentId: number, studentData: {}) => {
     const config = {
         headers: {

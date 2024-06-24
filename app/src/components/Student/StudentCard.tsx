@@ -1,16 +1,17 @@
 import { useSelector } from 'react-redux';
-import { getStudentSvc, updateStudentSvc } from '../../services/students';
-import { setLoading, updateStudent, setSelectedStudent } from '../../slices/studentSlice';
+import { getStudentSvc, addStudentSvc, updateStudentSvc } from '../../services/students';
+import { setLoading, updateStudent, setSelectedStudent, addStudent } from '../../slices/studentSlice';
 import type { RootState } from '../../store';
 import EntityCard from '../Entity/EntityCard';
+import EntityCardAdd from '../Entity/EntityCardAdd';
 
 const StudentCard = () => {
     const { selectedStudent } = useSelector((state: RootState) => state.students);
-    const { showFormModal } = useSelector((state: RootState) => state.global);
+    const { showEditModal, showAddModal } = useSelector((state: RootState) => state.global);
 
     return (
         <>
-            {showFormModal && (
+            {showEditModal && (
 
                 <EntityCard
                     entityName="Student"
@@ -20,6 +21,15 @@ const StudentCard = () => {
                     setLoading={setLoading}
                     setSelectedEntity={setSelectedStudent}
                     selectedEntity={selectedStudent}
+                />
+            )}
+
+            {showAddModal && (
+                <EntityCardAdd
+                    entityName="Student"
+                    addSvc={addStudentSvc}
+                    addEntity={addStudent}
+                    setLoading={setLoading}
                 />
             )}
         </>

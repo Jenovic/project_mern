@@ -48,6 +48,13 @@ const studentSlice = createSlice({
                 loading: false,
             }
         },
+        addStudent: (state, action: PayloadAction<Student>) => {
+            return {
+                ...state,
+                students: [...state.students, action.payload],
+                loading: false,
+            }
+        },
         updateStudent: (state, action: PayloadAction<Student>) => {
             return {
                 ...state,
@@ -62,6 +69,6 @@ const studentSlice = createSlice({
     }
 });
 
-export const { loadStudents, updateStudent, deleteStudent, setLoading, setUpdateDisabled, setSelectedStudent, setStudentLoading } = studentSlice.actions;
+export const { loadStudents, addStudent, updateStudent, deleteStudent, setLoading, setUpdateDisabled, setSelectedStudent, setStudentLoading } = studentSlice.actions;
 
 export default studentSlice.reducer;
