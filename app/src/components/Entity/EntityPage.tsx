@@ -77,7 +77,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                     onClose={handleCloseNotifModal}
                     onSubmit={handleSubmit}
                     title={`Delete ${entityName}`}
-                    content={`Are you sure you want to delete ${entityName}: ${selectedEntity.name} ${selectedEntity.surname} ? You cannot undo this operation`}
+                    content={`Are you sure you want to delete ${entityName.toLocaleLowerCase()}: ${selectedEntity.name} ${selectedEntity.middleName} ${selectedEntity.surname} ? You cannot undo this operation`}
                     submitText='Delete'
                     cancelText="Cancel"
                 />
