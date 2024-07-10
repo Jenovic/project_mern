@@ -30,6 +30,23 @@ export const getTeacherSvc = async (teacherId: number) => {
     }
 }
 
+export const addTeacherSvc = async (teacherdata: {}) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token,
+            'Content-Type': 'application/json'
+        },
+    }
+
+    try {
+        const res = await axios.post('api/teachers/', teacherdata, config);
+        return res;
+    } catch (error) {
+        console.error('Error adding teacher:', error);
+        throw error;
+    }
+}
+
 export const updateTeacherSvc = async (teacherId: number, teacherData: {}) => {
     const config = {
         headers: {

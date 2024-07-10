@@ -85,7 +85,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
             ...formData,
             [name]: value,
         });
-        // dispatch(setUpdateDisabled(false));
+        dispatch(setAddDisabled(false));
     };
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
@@ -105,27 +105,21 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
     };
 
     const handleCloseModal = () => {
-        // if (updateDisabled) {
-        //     dispatch(setShowFormModal(false));
-        //     dispatch(setSelectedEntity(null));
-        //     dispatch(setLoading(true));
-        //     dispatch(setUpdateDisabled(true));
-        // } else {
-        //     setShowNotifModal(true);
-        // }
+        if (addDisabled) {
+            dispatch(setShowAddModal(false));
+            dispatch(setLoading(true));
+            dispatch(setAddDisabled(true));
+        } else {
+            setShowNotifModal(true);
+        }
     };
 
     const handleCloseNotifModal = () => {
-        // setShowNotifModal(false);
-        // dispatch(setShowFormModal(false));
-        // dispatch(setSelectedEntity(null));
-        // dispatch(setUpdateDisabled(true));
-        // dispatch(setLoading(true));
+        setShowNotifModal(false);
+        dispatch(setShowAddModal(false));
+        dispatch(setAddDisabled(true));
+        dispatch(setLoading(true));
     };
-
-    // if (!selectedEntity) {
-    //     return null;
-    // }
 
     return (
         <>
@@ -134,7 +128,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
                     <div className="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between px-5">
-                                <span className='font-bold uppercase'>({entityName.toUpperCase()})</span>
+                                <span className='font-bold uppercase'>{`Add ${entityName}`}</span>
                                 <button
                                     className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700"
                                     onClick={() => handleCloseModal()}
@@ -178,9 +172,9 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
                     show={showNotifModal}
                     onClose={handleCloseNotifModal}
                     onSubmit={handleSubmit}
-                    title={`Edit ${entityName}`}
-                    content='Save your changes and update the record? Otherwise your changes will not apply.'
-                    submitText='Save and Update'
+                    title={`Add ${entityName}`}
+                    content='Save your changes and add the record? Otherwise your changes will not apply.'
+                    submitText='Save and Add'
                     cancelText="Don't save"
                 />
             )}

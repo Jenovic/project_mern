@@ -1,22 +1,38 @@
 import { useSelector } from 'react-redux';
-import { getTeacherSvc, updateTeacherSvc } from '../../services/teachers';
-import { setLoading, updateTeacher, setSelectedTeacher } from '../../slices/teacherSlice';
+import { getTeacherSvc, updateTeacherSvc, addTeacherSvc } from '../../services/teachers';
+import { setLoading, updateTeacher, setSelectedTeacher, addTeacher } from '../../slices/teacherSlice';
 import type { RootState } from '../../store';
 import EntityCard from '../Entity/EntityCard';
+import EntityCardAdd from '../Entity/EntityCardAdd';
 
 const TeacherCard = () => {
   const { selectedTeacher } = useSelector((state: RootState) => state.teachers);
+  const { showEditModal, showAddModal } = useSelector((state: RootState) => state.global);
 
   return (
-    <EntityCard
-      entityName='Teacher'
-      fetchSvc={getTeacherSvc}
-      updateSvc={updateTeacherSvc}
-      updateEntity={updateTeacher}
-      setLoading={setLoading}
-      setSelectedEntity={setSelectedTeacher}
-      selectedEntity={selectedTeacher}
-    />
+    <>
+      {showEditModal && (
+
+        <EntityCard
+          entityName='Teacher'
+          fetchSvc={getTeacherSvc}
+          updateSvc={updateTeacherSvc}
+          updateEntity={updateTeacher}
+          setLoading={setLoading}
+          setSelectedEntity={setSelectedTeacher}
+          selectedEntity={selectedTeacher}
+        />
+      )}
+
+      {showAddModal && (
+        <EntityCardAdd
+          entityName="Teacher"
+          addSvc={addTeacherSvc}
+          addEntity={addTeacher}
+          setLoading={setLoading}
+        />
+      )}
+    </>
   )
 }
 

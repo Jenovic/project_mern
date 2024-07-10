@@ -36,6 +36,13 @@ const teacherSlice = createSlice({
                 teachers: action.payload,
             }
         },
+        addTeacher: (state, action: PayloadAction<Teacher>) => {
+            return {
+                ...state,
+                teachers: [...state.teachers, action.payload],
+                loading: false,
+            }
+        },
         updateTeacher: (state, action: PayloadAction<Teacher>) => {
             return {
                 ...state,
@@ -50,6 +57,6 @@ const teacherSlice = createSlice({
     }
 });
 
-export const { loadTeachers, updateTeacher, deleteTeacher, setLoading, setUpdateDisabled, setSelectedTeacher, setTeacherLoading } = teacherSlice.actions;
+export const { loadTeachers, updateTeacher, deleteTeacher, setLoading, setUpdateDisabled, setSelectedTeacher, setTeacherLoading, addTeacher } = teacherSlice.actions;
 
 export default teacherSlice.reducer;
