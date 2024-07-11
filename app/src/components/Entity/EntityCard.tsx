@@ -25,22 +25,22 @@ interface FormData {
 
 interface EntityCardProps {
     entityName: string;
-    fetchSvc: (id: number) => Promise<any>;
     updateSvc: (id: number, formData: FormData) => Promise<any>;
     updateEntity: (entity: any) => any;
     setLoading: (loading: boolean) => any;
     setSelectedEntity: (entity: any) => any;
     selectedEntity: any;
+    fields: Field[];
 }
 
 const EntityCard: React.FC<EntityCardProps> = ({
     entityName,
-    fetchSvc,
     updateSvc,
     updateEntity,
     setLoading,
     setSelectedEntity,
     selectedEntity,
+    fields
 }) => {
     const dispatch = useDispatch();
     const { showEditModal, updateDisabled } = useSelector((state: RootState) => state.global);
@@ -54,7 +54,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
     };
 
     const [formData, setFormData] = useState<FormData>({});
-    const [fields, setFields] = useState<Field[]>([]);
+    const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
 
     useEffect(() => {
@@ -68,21 +68,10 @@ const EntityCard: React.FC<EntityCardProps> = ({
     }, [selectedEntity]);
 
     useEffect(() => {
-        const getEntityData = async () => {
-            if (selectedEntity) {
-                try {
-                    const response = await fetchSvc(selectedEntity._id);
-                    const filteredFields = response.data.fieldTypes.filter(
-                        (field: Field) => field.name !== '__v' && field.name !== 'responsables'
-                    );
-                    setFields(filteredFields);
-                } catch (error: any) {
-                    const message = error.msg;
-                    dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-                }
-            }
+        if (selectedEntity) {
+            const filtered = fields.filter((field: Field) => !['__v', 'responsables'].includes(field.name));
+            setFilteredFields(filtered);
         }
-        getEntityData();
     }, [selectedEntity, updateDisabled, showEditModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +147,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                             <div className="px-5 py-5">
                                 <form onSubmit={handleSubmit}>
                                     <div className='grid lg:grid-cols-2 lg:gap-x-5'>
-                                        {fields.map((field) => (
+                                        {filteredFields.map((field) => (
                                             <FormField key={field.name} field={field} value={formData[field.name]} onChange={handleChange} />
                                         ))}
                                     </div>

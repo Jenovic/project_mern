@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { getStudentSvc, addStudentSvc, updateStudentSvc } from '../../services/students';
+import { addStudentSvc, updateStudentSvc } from '../../services/students';
 import { setLoading, updateStudent, setSelectedStudent, addStudent } from '../../slices/studentSlice';
 import type { RootState } from '../../store';
 import EntityCard from '../Entity/EntityCard';
@@ -15,12 +15,12 @@ const StudentCard = () => {
 
                 <EntityCard
                     entityName="Student"
-                    fetchSvc={getStudentSvc}
                     updateSvc={updateStudentSvc}
                     updateEntity={updateStudent}
                     setLoading={setLoading}
                     setSelectedEntity={setSelectedStudent}
                     selectedEntity={selectedStudent}
+                    fields={fields}
                 />
             )}
 

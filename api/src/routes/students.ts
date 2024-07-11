@@ -185,8 +185,7 @@ router.get('/:student_id', auth, async (req: Request, res: Response) => {
 
         if (!student) return res.status(404).json({ errors: [{ msg: 'Student does not exist' }] });
 
-        const fieldTypes = getFieldTypes();
-        res.status(200).json({ student, fieldTypes });
+        res.status(200).json({ student });
 
     } catch (error: any) {
         console.error(error.message);

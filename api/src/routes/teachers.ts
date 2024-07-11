@@ -120,8 +120,7 @@ router.get('/:teacher_id', auth, async (req: Request, res: Response) => {
 
         if (!teacher) return res.status(404).json({ errors: [{ msg: 'Teacher does not exist' }] });
 
-        const fieldTypes = getFieldTypes();
-        res.status(200).json({ teacher, fieldTypes });
+        res.status(200).json({ teacher });
 
     } catch (error: any) {
         console.error(error.message);
