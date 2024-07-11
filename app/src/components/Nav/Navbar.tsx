@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import book from '../../assets/book.svg';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
@@ -8,7 +8,20 @@ const Navbar = () => {
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const { user } = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        const handleClickOutside = (e: any) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setDropdownVisible(false);
+            }
+        }
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    })
 
     const handleLogout = () => {
         dispatch(logout());
@@ -29,7 +42,7 @@ const Navbar = () => {
 
                     {/* Links on the right */}
                     {isAuthenticated && (
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <span className='text-black bg-sky-700 px-[9px] py-1 rounded-full cursor-pointer' id="dropdownNavMenu" onClick={toggleDropdown}><i className='fa-solid fa-user'></i></span>
                             {dropdownVisible && (
                                 <ul
