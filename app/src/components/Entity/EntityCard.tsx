@@ -13,27 +13,25 @@ interface Field {
     required: boolean;
 }
 
+interface Responsable {
+    name?: string;
+    middleName?: string;
+    surname?: string;
+    phoneNumber?: string;
+    address?: string;
+    email?: string;
+    relationshipToStudent?: string;
+    _id?: string;
+}
 interface FormData {
-    [key: string]: string | undefined;
     name?: string;
     middleName?: string;
     surname?: string;
     dob?: string;
     address?: string;
-    phoneNumber?: string
-}
-
-interface Responsable {
-    name: string;
-    middleName?: string;
-    surname: string;
     phoneNumber?: string;
-    address?: string;
-    email?: string;
-    relationshipToStudent: string;
-    _id?: string;
+    responsables?: Responsable[];
 }
-
 interface EntityCardProps {
     entityName: string;
     updateSvc: (id: number, formData: FormData) => Promise<any>;
@@ -84,7 +82,6 @@ const EntityCard: React.FC<EntityCardProps> = ({
             const filtered = fields.filter((field: Field) => !['__v', 'responsables'].includes(field.name));
             setFilteredFields(filtered);
         }
-        console.log('reached');
     }, [selectedEntity, updateDisabled, showEditModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,26 +92,44 @@ const EntityCard: React.FC<EntityCardProps> = ({
         });
         dispatch(setUpdateDisabled(false));
     };
-    console.log(selectedEntity);
 
     const handleResponsableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        const updatedResponsables = [...selectedEntity.responsables];
-        updatedResponsables[activeTab] = {
-            ...updatedResponsables[activeTab],
-            [name]: value,
-        };
-        setSelectedEntity({
-            ...selectedEntity,
-            responsables: updatedResponsables,
+
+        setSelectedEntity((prevEntity: any) => {
+            const updatedResponsables = [...(prevEntity.responsables || [])];
+            updatedResponsables[activeTab] = {
+                ...updatedResponsables[activeTab],
+                [name]: value,
+            };
+
+            return {
+                ...prevEntity,
+                responsables: updatedResponsables,
+            };
         });
+
+        setFormData(prevFormData => {
+            const updatedResponsables = [...(prevFormData.responsables || [])];
+            updatedResponsables[activeTab] = {
+                ...updatedResponsables[activeTab],
+                [name]: value,
+            };
+
+            return {
+                ...prevFormData,
+                responsables: updatedResponsables,
+            };
+        });
+
         dispatch(setUpdateDisabled(false));
     };
+
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
 
-        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name]);
+        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name as keyof FormData]);
         if (emptyRequiredFields) {
             dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
             return;
@@ -176,7 +191,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                 <form onSubmit={handleSubmit}>
                                     <div className='grid lg:grid-cols-2 lg:gap-x-5'>
                                         {filteredFields.map((field) => (
-                                            <FormField key={field.name} field={field} value={formData[field.name]} onChange={handleChange} />
+                                            <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                         ))}
                                     </div>
                                     {selectedEntity.responsables && selectedEntity.responsables.length > 0 && (
@@ -201,37 +216,37 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                                         <>
                                                             <FormField
                                                                 field={{ name: 'name', type: 'text', required: true }}
-                                                                value={selectedEntity.responsables[activeTab].name}
+                                                                value={formData.responsables && formData.responsables[activeTab].name}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'middleName', type: 'text', required: false }}
-                                                                value={selectedEntity.responsables[activeTab].middleName}
+                                                                value={formData.responsables && formData.responsables[activeTab].middleName}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'surname', type: 'text', required: true }}
-                                                                value={selectedEntity.responsables[activeTab].surname}
+                                                                value={formData.responsables && formData.responsables[activeTab].surname}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'relationshipToStudent', type: 'text', required: true }}
-                                                                value={selectedEntity.responsables[activeTab].relationshipToStudent}
+                                                                value={formData.responsables && formData.responsables[activeTab].relationshipToStudent}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'phoneNumber', type: 'text', required: false }}
-                                                                value={selectedEntity.responsables[activeTab].phoneNumber}
+                                                                value={formData.responsables && formData.responsables[activeTab].phoneNumber}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'address', type: 'text', required: false }}
-                                                                value={selectedEntity.responsables[activeTab].address}
+                                                                value={formData.responsables && formData.responsables[activeTab].address}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                             <FormField
                                                                 field={{ name: 'email', type: 'text', required: false }}
-                                                                value={selectedEntity.responsables[activeTab].email}
+                                                                value={formData.responsables && formData.responsables[activeTab].email}
                                                                 onChange={handleResponsableChange}
                                                             />
                                                         </>
