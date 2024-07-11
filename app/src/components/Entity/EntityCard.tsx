@@ -23,6 +23,17 @@ interface FormData {
     phoneNumber?: string
 }
 
+interface Responsable {
+    name: string;
+    middleName?: string;
+    surname: string;
+    phoneNumber?: string;
+    address?: string;
+    email?: string;
+    relationshipToStudent: string;
+    _id?: string;
+}
+
 interface EntityCardProps {
     entityName: string;
     updateSvc: (id: number, formData: FormData) => Promise<any>;
@@ -56,6 +67,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
         if (selectedEntity) {
@@ -72,6 +84,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
             const filtered = fields.filter((field: Field) => !['__v', 'responsables'].includes(field.name));
             setFilteredFields(filtered);
         }
+        console.log('reached');
     }, [selectedEntity, updateDisabled, showEditModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +92,21 @@ const EntityCard: React.FC<EntityCardProps> = ({
         setFormData({
             ...formData,
             [name]: value,
+        });
+        dispatch(setUpdateDisabled(false));
+    };
+    console.log(selectedEntity);
+
+    const handleResponsableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const updatedResponsables = [...selectedEntity.responsables];
+        updatedResponsables[activeTab] = {
+            ...updatedResponsables[activeTab],
+            [name]: value,
+        };
+        setSelectedEntity({
+            ...selectedEntity,
+            responsables: updatedResponsables,
         });
         dispatch(setUpdateDisabled(false));
     };
@@ -151,23 +179,82 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                             <FormField key={field.name} field={field} value={formData[field.name]} onChange={handleChange} />
                                         ))}
                                     </div>
-                                    <div>
-                                        <div className="flex items-center justify-end gap-5">
-                                            <button
-                                                className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
-                                                type="submit"
-                                                disabled={updateDisabled}
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                                onClick={() => handleCloseModal()}
-                                            >
-                                                Cancel
-                                            </button>
+                                    {selectedEntity.responsables && selectedEntity.responsables.length > 0 && (
+                                        <div className="mt-5">
+                                            <h3 className="font-bold text-lg text-left mb-4">Responsables Details</h3>
+                                            <ul className="flex border-b">
+                                                {selectedEntity.responsables.map((responsable: Responsable, idx: number) => (
+                                                    <li key={responsable._id} className={`mr-1 ${activeTab === idx ? 'border-l border-t border-r rounded-t' : ''}`}>
+                                                        <a
+                                                            className={`bg-white inline-block py-2 px-4 font-semibold cursor-pointer ${activeTab === idx ? 'text-blue-500 hover:text-blue-800' : ''}`}
+                                                            onClick={() => setActiveTab(idx)}
+                                                        >
+                                                            {responsable.name} {responsable.surname}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <div className="p-5 border-l border-r border-b">
+                                                <div className='grid lg:grid-cols-2 lg:gap-x-5'>
+
+                                                    {selectedEntity.responsables[activeTab] && (
+                                                        <>
+                                                            <FormField
+                                                                field={{ name: 'name', type: 'text', required: true }}
+                                                                value={selectedEntity.responsables[activeTab].name}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'middleName', type: 'text', required: false }}
+                                                                value={selectedEntity.responsables[activeTab].middleName}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'surname', type: 'text', required: true }}
+                                                                value={selectedEntity.responsables[activeTab].surname}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'relationshipToStudent', type: 'text', required: true }}
+                                                                value={selectedEntity.responsables[activeTab].relationshipToStudent}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'phoneNumber', type: 'text', required: false }}
+                                                                value={selectedEntity.responsables[activeTab].phoneNumber}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'address', type: 'text', required: false }}
+                                                                value={selectedEntity.responsables[activeTab].address}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                            <FormField
+                                                                field={{ name: 'email', type: 'text', required: false }}
+                                                                value={selectedEntity.responsables[activeTab].email}
+                                                                onChange={handleResponsableChange}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
+                                    )}
+                                    <div className="flex items-center justify-end gap-5 mt-5">
+                                        <button
+                                            className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${updateDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
+                                            type="submit"
+                                            disabled={updateDisabled}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                            onClick={() => handleCloseModal()}
+                                        >
+                                            Cancel
+                                        </button>
                                     </div>
                                 </form>
                             </div>
