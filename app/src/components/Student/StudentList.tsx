@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { getStudentsSvc } from '../../services/students';
-import { loadStudents, setLoading, setSelectedStudent } from '../../slices/studentSlice';
+import { loadStudents, setLoading, setSelectedStudent, setFields } from '../../slices/studentSlice';
 import { RootState } from '../../store';
 import StudentCard from './StudentCard';
 import EntityList from '../Entity/EntityList';
@@ -14,6 +14,7 @@ const StudentList: React.FC<{ showFull: boolean }> = ({ showFull }) => {
             entityName="Student"
             fetchSvc={getStudentsSvc}
             loadEntities={(students) => dispatch(loadStudents(students))}
+            setEntityFields={(fields) => dispatch(setFields(fields))}
             setLoading={(loading) => dispatch(setLoading(loading))}
             setSelectedEntity={(student) => dispatch(setSelectedStudent(student))}
             entitiesSelector={(state: RootState) => state.students.students}

@@ -6,7 +6,7 @@ import EntityCard from '../Entity/EntityCard';
 import EntityCardAdd from '../Entity/EntityCardAdd';
 
 const StudentCard = () => {
-    const { selectedStudent } = useSelector((state: RootState) => state.students);
+    const { selectedStudent, fields } = useSelector((state: RootState) => state.students);
     const { showEditModal, showAddModal } = useSelector((state: RootState) => state.global);
 
     return (
@@ -30,6 +30,7 @@ const StudentCard = () => {
                     addSvc={addStudentSvc}
                     addEntity={addStudent}
                     setLoading={setLoading}
+                    fields={fields}
                 />
             )}
         </>

@@ -12,6 +12,7 @@ interface Teacher {
 
 interface TeacherState {
     teachers: Teacher[];
+    fields: [];
     loading: boolean,
     updateDisabled: boolean,
     selectedTeacher: any,
@@ -20,6 +21,7 @@ interface TeacherState {
 
 const initialState: TeacherState = {
     teachers: [],
+    fields: [],
     loading: true,
     updateDisabled: true,
     selectedTeacher: null,
@@ -50,6 +52,12 @@ const teacherSlice = createSlice({
             }
         },
         deleteTeacher: (state, action: PayloadAction<Teacher>) => { },
+        setFields: (state, action: PayloadAction<[]>) => {
+            return {
+                ...state,
+                fields: action.payload,
+            }
+        },
         setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
         setSelectedTeacher: (state, action: PayloadAction<any>) => { state.selectedTeacher = action.payload },
@@ -57,6 +65,6 @@ const teacherSlice = createSlice({
     }
 });
 
-export const { loadTeachers, updateTeacher, deleteTeacher, setLoading, setUpdateDisabled, setSelectedTeacher, setTeacherLoading, addTeacher } = teacherSlice.actions;
+export const { loadTeachers, updateTeacher, deleteTeacher, setLoading, setUpdateDisabled, setSelectedTeacher, setTeacherLoading, addTeacher, setFields } = teacherSlice.actions;
 
 export default teacherSlice.reducer;

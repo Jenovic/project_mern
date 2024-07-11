@@ -28,6 +28,7 @@ interface EntityCardProps {
     addSvc: (formData: FormData) => Promise<any>;
     addEntity: (entity: any) => any;
     setLoading: (loading: boolean) => any;
+    fields: Field[];
 }
 
 const EntityCardAdd: React.FC<EntityCardProps> = ({
@@ -35,6 +36,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
     addSvc,
     addEntity,
     setLoading,
+    fields
 }) => {
     const dispatch = useDispatch();
     const { showAddModal, addDisabled } = useSelector((state: RootState) => state.global);
@@ -48,36 +50,15 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
     };
 
     const [formData, setFormData] = useState<FormData>({});
-    const [fields, setFields] = useState<Field[]>([]);
+    const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
 
-    // useEffect(() => {
-    //     if (selectedEntity) {
-    //         const initialFormData = {
-    //             ...selectedEntity,
-    //             dob: selectedEntity.dob ? formatDate(selectedEntity.dob) : '',
-    //         };
-    //         setFormData(initialFormData);
-    //     }
-    // }, [selectedEntity]);
-
-    // useEffect(() => {
-    //     const getEntityData = async () => {
-    //         if (selectedEntity) {
-    //             try {
-    //                 const response = await fetchSvc(selectedEntity._id);
-    //                 const filteredFields = response.data.fieldTypes.filter(
-    //                     (field: Field) => field.name !== '__v' && field.name !== 'responsables'
-    //                 );
-    //                 setFields(filteredFields);
-    //             } catch (error: any) {
-    //                 const message = error.msg;
-    //                 dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-    //             }
-    //         }
-    //     }
-    //     getEntityData();
-    // }, [selectedEntity, updateDisabled, showFormModal]);
+    useEffect(() => {
+        const filtered = fields.filter(
+            (field: Field) => !['__v', 'responsables', 'dateCreated', 'dateModified', '_id'].includes(field.name)
+        );
+        setFilteredFields(filtered);
+    }, [addDisabled, showAddModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -89,19 +70,26 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
     };
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
-        // if (e) e.preventDefault();
-        // try {
-        //     const response = await updateSvc(selectedEntity._id, formData);
-        //     dispatch(setAlert({ id: uuidv4(), message: `${entityName} updated successfully`, type: 'success' }));
-        //     dispatch(updateEntity(response.data));
-        //     dispatch(setShowFormModal(false));
-        // } catch (error: any) {
-        //     const message = error.msg;
-        //     dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
-        // } finally {
-        //     dispatch(setLoading(true));
-        //     dispatch(setUpdateDisabled(true));
-        // }
+        if (e) e.preventDefault();
+
+        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name]);
+        if (emptyRequiredFields) {
+            dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
+            return;
+        }
+
+        try {
+            const response = await addSvc(formData);
+            dispatch(setAlert({ id: uuidv4(), message: `${entityName} added successfully`, type: 'success' }));
+            dispatch(addEntity(response.data));
+            dispatch(setShowAddModal(false));
+        } catch (error: any) {
+            const message = error.msg;
+            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+        } finally {
+            dispatch(setLoading(true));
+            dispatch(setAddDisabled(true));
+        }
     };
 
     const handleCloseModal = () => {
@@ -139,7 +127,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
                             <div className="px-5 py-5">
                                 <form onSubmit={handleSubmit}>
                                     <div className='grid lg:grid-cols-2 lg:gap-x-5'>
-                                        {fields.map((field) => (
+                                        {filteredFields.map((field) => (
                                             <FormField key={field.name} field={field} value={formData[field.name]} onChange={handleChange} />
                                         ))}
                                     </div>

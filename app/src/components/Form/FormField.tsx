@@ -26,6 +26,7 @@ const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) => {
                 type={determineType(field.type)}
                 value={field.type === 'Date' ? (value || '').split('T')[0] : (value || '')}
                 onChange={onChange}
+                required={field.required}
                 readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'}
                 className={`col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
                     focus:shadow-outline ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified' ? 'bg-gray-200 cursor-not-allowed' : ''

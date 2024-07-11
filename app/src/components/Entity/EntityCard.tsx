@@ -96,6 +96,13 @@ const EntityCard: React.FC<EntityCardProps> = ({
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
+
+        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name]);
+        if (emptyRequiredFields) {
+            dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
+            return;
+        }
+
         try {
             const response = await updateSvc(selectedEntity._id, formData);
             dispatch(setAlert({ id: uuidv4(), message: `${entityName} updated successfully`, type: 'success' }));

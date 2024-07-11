@@ -161,11 +161,14 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
         if (!students || students.length === 0) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });
 
+        const fieldTypes = getFieldTypes();
+
         res.json({
             students,
             total,
             page,
             pages: Math.ceil(total / limit),
+            fieldTypes
         });
     } catch (error: any) {
         console.error(error.message);

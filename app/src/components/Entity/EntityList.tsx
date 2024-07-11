@@ -11,6 +11,7 @@ interface EntityListProps {
     entityName: string;
     fetchSvc: (page: number) => Promise<any>;
     loadEntities: (entities: any[]) => any;
+    setEntityFields: (fields: []) => any;
     setLoading: (loading: boolean) => any;
     setSelectedEntity: (entity: any) => any;
     entitiesSelector: (state: RootState) => any[];
@@ -24,6 +25,7 @@ const EntityList: React.FC<EntityListProps> = ({
     entityName,
     fetchSvc,
     loadEntities,
+    setEntityFields,
     setLoading,
     setSelectedEntity,
     entitiesSelector,
@@ -44,6 +46,7 @@ const EntityList: React.FC<EntityListProps> = ({
             try {
                 const res = await fetchSvc(page);
                 loadEntities(res.data[`${entityName.toLowerCase()}s`]);
+                setEntityFields(res.data.fieldTypes);
                 setTotalPages(res.data.pages);
             } catch (error: any) {
                 const message = error.msg;
