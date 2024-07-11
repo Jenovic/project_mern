@@ -12,6 +12,7 @@ interface EntityListProps {
     fetchSvc: (page: number) => Promise<any>;
     loadEntities: (entities: any[]) => any;
     setEntityFields: (fields: []) => any;
+    setEntitySubFields: (fields: []) => any;
     setLoading: (loading: boolean) => any;
     setSelectedEntity: (entity: any) => any;
     entitiesSelector: (state: RootState) => any[];
@@ -21,11 +22,19 @@ interface EntityListProps {
     editComponent: React.FC;
 }
 
+interface Field {
+    name: string;
+    type: string;
+    required: boolean;
+    subfields?: Field[];
+}
+
 const EntityList: React.FC<EntityListProps> = ({
     entityName,
     fetchSvc,
     loadEntities,
     setEntityFields,
+    setEntitySubFields,
     setLoading,
     setSelectedEntity,
     entitiesSelector,
@@ -47,6 +56,13 @@ const EntityList: React.FC<EntityListProps> = ({
                 const res = await fetchSvc(page);
                 loadEntities(res.data[`${entityName.toLowerCase()}s`]);
                 setEntityFields(res.data.fieldTypes);
+
+                const responsablesField = res.data.fieldTypes.find((field: Field) => field.name === 'responsables');
+                if (responsablesField && responsablesField.subfields) {
+                    setEntitySubFields(responsablesField.subfields);
+                } else {
+                    setEntitySubFields([]);
+                }
                 setTotalPages(res.data.pages);
             } catch (error: any) {
                 const message = error.msg;

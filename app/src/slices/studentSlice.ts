@@ -24,6 +24,7 @@ interface Student {
 interface StudentState {
     students: Student[];
     fields: [];
+    responsibleFields: [];
     loading: boolean,
     updateDisabled: boolean,
     selectedStudent: any,
@@ -33,6 +34,7 @@ interface StudentState {
 const initialState: StudentState = {
     students: [],
     fields: [],
+    responsibleFields: [],
     loading: true,
     updateDisabled: true,
     selectedStudent: null,
@@ -70,6 +72,12 @@ const studentSlice = createSlice({
                 fields: action.payload,
             }
         },
+        setResponsibleFields: (state, action: PayloadAction<[]>) => {
+            return {
+                ...state,
+                responsibleFields: action.payload,
+            }
+        },
         setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
         setSelectedStudent: (state, action: PayloadAction<any>) => { state.selectedStudent = action.payload },
@@ -77,6 +85,17 @@ const studentSlice = createSlice({
     }
 });
 
-export const { loadStudents, addStudent, updateStudent, deleteStudent, setLoading, setUpdateDisabled, setSelectedStudent, setStudentLoading, setFields } = studentSlice.actions;
+export const {
+    loadStudents,
+    addStudent,
+    updateStudent,
+    deleteStudent,
+    setLoading,
+    setUpdateDisabled,
+    setSelectedStudent,
+    setStudentLoading,
+    setFields,
+    setResponsibleFields
+} = studentSlice.actions;
 
 export default studentSlice.reducer;

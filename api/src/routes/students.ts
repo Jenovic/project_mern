@@ -12,15 +12,30 @@ interface FieldType {
     name: string;
     type: string;
     required: boolean;
+    subfields?: FieldType[];
 }
 
 const getFieldTypes = (): FieldType[] => {
     const schema = Student.schema.paths;
-    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
-        name: field,
-        type: schema[field].instance,
-        required: !!schema[field].isRequired,
-    }));
+    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => {
+        const fieldType: FieldType = {
+            name: field,
+            type: schema[field].instance,
+            required: !!schema[field].isRequired,
+        };
+
+        // Check for subfields in the 'responsables' field
+        if (field === 'responsables') {
+            const subSchema = (schema[field] as any).schema.paths;
+            fieldType.subfields = Object.keys(subSchema).map((subField) => ({
+                name: subField,
+                type: subSchema[subField].instance,
+                required: !!subSchema[subField].isRequired,
+            }));
+        }
+
+        return fieldType;
+    });
     return fieldTypes;
 };
 

@@ -15,6 +15,7 @@ const TeacherList: React.FC<{ showFull: boolean }> = ({ showFull }) => {
             fetchSvc={getTeachersSvc}
             loadEntities={(teachers) => dispatch(loadTeachers(teachers))}
             setEntityFields={(fields) => dispatch(setFields(fields))}
+            setEntitySubFields={() => { }}
             setLoading={(loading) => dispatch(setLoading(loading))}
             setSelectedEntity={(teacher) => dispatch(setSelectedTeacher(teacher))}
             entitiesSelector={(state: RootState) => state.teachers.teachers}
