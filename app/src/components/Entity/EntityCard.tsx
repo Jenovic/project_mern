@@ -65,6 +65,8 @@ const EntityCard: React.FC<EntityCardProps> = ({
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [showResponsableNotifModal, setShowResponsableNotifModal] = useState(false);
+    const [responsableName, setResponsableName] = useState('');
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
@@ -168,6 +170,41 @@ const EntityCard: React.FC<EntityCardProps> = ({
         dispatch(setLoading(true));
     };
 
+    const handleCloseResponsableModal = () => {
+        setShowResponsableNotifModal(false);
+    }
+
+    const handleDeleteResponsable = () => {
+        setSelectedEntity((prevEntity: any) => {
+            const updatedResponsables = prevEntity.responsables.filter((_: Responsable, idx: number) => idx !== activeTab);
+
+            return {
+                ...prevEntity,
+                responsables: updatedResponsables,
+            };
+        });
+
+        setFormData((prevFormData: FormData) => {
+            const updatedResponsables = (prevFormData.responsables || []).filter((_: Responsable, idx: number) => idx !== activeTab);
+
+            return {
+                ...prevFormData,
+                responsables: updatedResponsables,
+            };
+        });
+
+        setActiveTab((prevActiveTab) => Math.max(0, prevActiveTab - 1));
+
+        dispatch(setUpdateDisabled(false));
+        setShowResponsableNotifModal(false);
+    };
+
+
+    const handleDeleteResponsableClick = (name: any) => {
+        setResponsableName(name);
+        setShowResponsableNotifModal(true);
+    }
+
     if (!selectedEntity) {
         return null;
     }
@@ -194,11 +231,11 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                             <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                         ))}
                                     </div>
-                                    {selectedEntity.responsables && selectedEntity.responsables.length > 0 && (
+                                    {formData.responsables && formData.responsables.length > 0 && (
                                         <div className="mt-5">
                                             <h3 className="font-bold text-lg text-left mb-4">Responsables Details</h3>
                                             <ul className="flex border-b">
-                                                {selectedEntity.responsables.map((responsable: Responsable, idx: number) => (
+                                                {formData.responsables.map((responsable: Responsable, idx: number) => (
                                                     <li key={responsable._id} className={`mr-1 ${activeTab === idx ? 'border-l border-t border-r rounded-t' : ''}`}>
                                                         <a
                                                             className={`bg-white inline-block py-2 px-4 font-semibold cursor-pointer ${activeTab === idx ? 'text-blue-500 hover:text-blue-800' : ''}`}
@@ -206,13 +243,14 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                                         >
                                                             {responsable.name} {responsable.surname}
                                                         </a>
+                                                        <span className='pr-4 hover:cursor-pointer' onClick={() => handleDeleteResponsableClick(responsable.name)}><i className="fa-solid fa-trash hover:text-sky-500"></i></span>
                                                     </li>
                                                 ))}
                                             </ul>
                                             <div className="p-5 border-l border-r border-b">
                                                 <div className='grid lg:grid-cols-2 lg:gap-x-5'>
 
-                                                    {selectedEntity.responsables[activeTab] && (
+                                                    {formData.responsables[activeTab] && (
                                                         <>
                                                             <FormField
                                                                 field={{ name: 'name', type: 'text', required: true }}
@@ -286,6 +324,17 @@ const EntityCard: React.FC<EntityCardProps> = ({
                     content='Save your changes and update the record? Otherwise your changes will not apply.'
                     submitText='Save and Update'
                     cancelText="Don't save"
+                />
+            )}
+            {showResponsableNotifModal && (
+                <NotificationModal
+                    show={showResponsableNotifModal}
+                    onClose={handleCloseResponsableModal}
+                    onSubmit={handleDeleteResponsable}
+                    title={`Delete ${responsableName}`}
+                    content='Are you sure you want to delete this responsable from the student?'
+                    submitText='Delete'
+                    cancelText="Cancel"
                 />
             )}
         </>
