@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
 import { setShowEditModal } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
+import { RootState } from '../../store';
+import { Field } from '../../utils/interfaces';
 import Pagination from '../Pagination/Pagination';
 import Loader from '../Loader';
-import { RootState } from '../../store';
 
 interface EntityListProps {
     entityName: string;
@@ -20,13 +21,6 @@ interface EntityListProps {
     showFull: boolean;
     columns: { label: string, accessor: string }[];
     editComponent: React.FC;
-}
-
-interface Field {
-    name: string;
-    type: string;
-    required: boolean;
-    subfields?: Field[];
 }
 
 const EntityList: React.FC<EntityListProps> = ({

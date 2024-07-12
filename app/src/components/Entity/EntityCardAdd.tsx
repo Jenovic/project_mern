@@ -4,26 +4,11 @@ import { setAlert } from '../../slices/alertSlice';
 import { setShowAddModal, setAddDisabled } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
+import { Field, FormData } from '../../utils/interfaces';
 import NotificationModal from '../Modal/NotificationModal';
 import FormField from '../Form/FormField';
 
-interface Field {
-    name: string;
-    type: string;
-    required: boolean;
-}
-
-interface FormData {
-    [key: string]: string | undefined;
-    name?: string;
-    middleName?: string;
-    surname?: string;
-    dob?: string;
-    address?: string;
-    phoneNumber?: string
-}
-
-interface EntityCardProps {
+interface EntityCardAddProps {
     entityName: string;
     addSvc: (formData: FormData) => Promise<any>;
     addEntity: (entity: any) => any;
@@ -31,7 +16,7 @@ interface EntityCardProps {
     fields: Field[];
 }
 
-const EntityCardAdd: React.FC<EntityCardProps> = ({
+const EntityCardAdd: React.FC<EntityCardAddProps> = ({
     entityName,
     addSvc,
     addEntity,
@@ -72,7 +57,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
 
-        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name]);
+        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name as keyof FormData]);
         if (emptyRequiredFields) {
             dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
             return;
@@ -128,7 +113,7 @@ const EntityCardAdd: React.FC<EntityCardProps> = ({
                                 <form onSubmit={handleSubmit}>
                                     <div className='grid lg:grid-cols-2 lg:gap-x-5'>
                                         {filteredFields.map((field) => (
-                                            <FormField key={field.name} field={field} value={formData[field.name]} onChange={handleChange} />
+                                            <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                         ))}
                                     </div>
                                     <div>

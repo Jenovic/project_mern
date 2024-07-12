@@ -71,7 +71,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                     <div className='flex gap-4 prose-sys prose-p:cursor-pointer prose-p:m-0 prose-p:py-1 prose-p:px-2'>
                         <p className='hover:bg-sky-200 hover:shadow' title="Edit the selected row" onClick={handleEdit}>Edit <i className="fa-regular fa-pen-to-square"></i></p>
                         <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row" onClick={handleDelete}>Delete <i className="fa-solid fa-trash"></i></p>
-                        <p className='hover:bg-sky-200 hover:shadow' title="Delete the selected row" onClick={handleAdd}>Add <i className="fa-solid fa-plus"></i></p>
+                        <p className='hover:bg-sky-200 hover:shadow' title="Add a new record" onClick={handleAdd}>Add <i className="fa-solid fa-plus"></i></p>
                     </div>
                 </div>
                 <EntityListComponent showFull={true} />

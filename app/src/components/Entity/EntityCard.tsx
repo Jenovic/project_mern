@@ -4,34 +4,12 @@ import { setAlert } from '../../slices/alertSlice';
 import { setShowEditModal, setUpdateDisabled } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
+import { Field, Responsable, FormData } from '../../utils/interfaces';
+import { formatDate } from '../../utils/helpers';
 import NotificationModal from '../Modal/NotificationModal';
 import FormField from '../Form/FormField';
+import ResponsableTabs from '../Student/ResponsableTabs';
 
-interface Field {
-    name: string;
-    type: string;
-    required: boolean;
-}
-
-interface Responsable {
-    name?: string;
-    middleName?: string;
-    surname?: string;
-    phoneNumber?: string;
-    address?: string;
-    email?: string;
-    relationshipToStudent?: string;
-    _id?: string;
-}
-interface FormData {
-    name?: string;
-    middleName?: string;
-    surname?: string;
-    dob?: string;
-    address?: string;
-    phoneNumber?: string;
-    responsables?: Responsable[];
-}
 interface EntityCardProps {
     entityName: string;
     updateSvc: (id: number, formData: FormData) => Promise<any>;
@@ -53,14 +31,6 @@ const EntityCard: React.FC<EntityCardProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { showEditModal, updateDisabled } = useSelector((state: RootState) => state.global);
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
 
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
@@ -205,6 +175,10 @@ const EntityCard: React.FC<EntityCardProps> = ({
         setShowResponsableNotifModal(true);
     }
 
+    const handleAddResponsable = () => {
+
+    }
+
     if (!selectedEntity) {
         return null;
     }
@@ -233,64 +207,17 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                     </div>
                                     {formData.responsables && formData.responsables.length > 0 && (
                                         <div className="mt-5">
-                                            <h3 className="font-bold text-lg text-left mb-4">Responsables Details</h3>
-                                            <ul className="flex border-b">
-                                                {formData.responsables.map((responsable: Responsable, idx: number) => (
-                                                    <li key={responsable._id} className={`mr-1 ${activeTab === idx ? 'border-l border-t border-r rounded-t' : ''}`}>
-                                                        <a
-                                                            className={`bg-white inline-block py-2 px-4 font-semibold cursor-pointer ${activeTab === idx ? 'text-blue-500 hover:text-blue-800' : ''}`}
-                                                            onClick={() => setActiveTab(idx)}
-                                                        >
-                                                            {responsable.name} {responsable.surname}
-                                                        </a>
-                                                        <span className='pr-4 hover:cursor-pointer' onClick={() => handleDeleteResponsableClick(responsable.name)}><i className="fa-solid fa-trash hover:text-sky-500"></i></span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <div className="p-5 border-l border-r border-b">
-                                                <div className='grid lg:grid-cols-2 lg:gap-x-5'>
-
-                                                    {formData.responsables[activeTab] && (
-                                                        <>
-                                                            <FormField
-                                                                field={{ name: 'name', type: 'text', required: true }}
-                                                                value={formData.responsables && formData.responsables[activeTab].name}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'middleName', type: 'text', required: false }}
-                                                                value={formData.responsables && formData.responsables[activeTab].middleName}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'surname', type: 'text', required: true }}
-                                                                value={formData.responsables && formData.responsables[activeTab].surname}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'relationshipToStudent', type: 'text', required: true }}
-                                                                value={formData.responsables && formData.responsables[activeTab].relationshipToStudent}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'phoneNumber', type: 'text', required: false }}
-                                                                value={formData.responsables && formData.responsables[activeTab].phoneNumber}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'address', type: 'text', required: false }}
-                                                                value={formData.responsables && formData.responsables[activeTab].address}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                            <FormField
-                                                                field={{ name: 'email', type: 'text', required: false }}
-                                                                value={formData.responsables && formData.responsables[activeTab].email}
-                                                                onChange={handleResponsableChange}
-                                                            />
-                                                        </>
-                                                    )}
-                                                </div>
+                                            <div className='flex justify-between mb-2'>
+                                                <h3 className="font-bold text-lg text-left">Responsables Details</h3>
+                                                {formData.responsables.length < 2 && <p className='hover:bg-sky-200 hover:shadow p-2 cursor-pointer' title="Add a new responsable" onClick={() => handleAddResponsable()}>Add Responsable <i className="fa-solid fa-plus"></i></p>}
                                             </div>
+                                            <ResponsableTabs
+                                                responsables={formData.responsables}
+                                                activeTab={activeTab}
+                                                setActiveTab={setActiveTab}
+                                                handleResponsableChange={handleResponsableChange}
+                                                handleDeleteResponsableClick={handleDeleteResponsableClick}
+                                            />
                                         </div>
                                     )}
                                     <div className="flex items-center justify-end gap-5 mt-5">
