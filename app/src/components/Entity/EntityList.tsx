@@ -5,6 +5,7 @@ import { setShowEditModal } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
 import { Field } from '../../utils/interfaces';
+import { format } from 'date-fns';
 import Pagination from '../Pagination/Pagination';
 import Loader from '../Loader';
 
@@ -113,10 +114,13 @@ const EntityList: React.FC<EntityListProps> = ({
                                             <td key={`${entity.id}-${column.accessor}`} className="px-3">
                                                 {Array.isArray(entity[column.accessor])
                                                     ? entity[column.accessor].map((item: any, i: number) => (
-                                                        <div key={`${entity.id}-${column.accessor}-${i}`}>{item.name} {item.surname} ({item.relationshipToStudent})</div>
+                                                        <div key={`${entity.id}-${column.accessor}-${i}`}>
+                                                            {item.name} {item.surname} ({item.relationshipToStudent})
+                                                        </div>
                                                     ))
-                                                    : entity[column.accessor]
-                                                }
+                                                    : entity[column.accessor] instanceof Date
+                                                        ? format(entity[column.accessor], 'MM/dd/yyyy') // Format the date
+                                                        : entity[column.accessor]}
                                             </td>
                                         ))}
                                     </tr>

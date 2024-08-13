@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Auth {
+export interface Auth {
     token: string;
     isAuthenticated?: boolean;
     loading?: boolean;

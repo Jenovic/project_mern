@@ -11,7 +11,7 @@ interface Responsable {
     relationshipToStudent: string;
 }
 
-interface Student {
+export interface Student {
     name: string;
     middleName?: string;
     surname: string;
