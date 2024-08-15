@@ -5,6 +5,7 @@ interface GlobalState {
     showAddModal: boolean;
     updateDisabled: boolean;
     addDisabled: boolean;
+    addResponsableDisabled: boolean;
 }
 
 const initialState: GlobalState = {
@@ -12,6 +13,7 @@ const initialState: GlobalState = {
     showAddModal: false,
     updateDisabled: true,
     addDisabled: true,
+    addResponsableDisabled: true,
 };
 
 const globalSlice = createSlice({
@@ -22,10 +24,11 @@ const globalSlice = createSlice({
         setShowAddModal: (state, action: PayloadAction<boolean>) => { state.showAddModal = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
         setAddDisabled: (state, action: PayloadAction<boolean>) => { state.addDisabled = action.payload },
+        setAddResponsableDisabled: (state, action: PayloadAction<boolean>) => { state.addResponsableDisabled = action.payload }
     }
 });
 
-export const { setShowEditModal, setShowAddModal, setUpdateDisabled, setAddDisabled } = globalSlice.actions;
+export const { setShowEditModal, setShowAddModal, setUpdateDisabled, setAddDisabled, setAddResponsableDisabled } = globalSlice.actions;
 
 export default globalSlice.reducer;
 

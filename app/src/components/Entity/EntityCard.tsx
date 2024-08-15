@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
-import { setShowEditModal, setUpdateDisabled } from '../../slices/globalSlice';
+import { setShowEditModal, setUpdateDisabled, setAddResponsableDisabled } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
 import { Field, Responsable, FormData } from '../../utils/interfaces';
@@ -9,6 +9,7 @@ import { formatDate } from '../../utils/helpers';
 import NotificationModal from '../Modal/NotificationModal';
 import FormField from '../Form/FormField';
 import ResponsableTabs from '../Student/ResponsableTabs';
+import ResponsableModal from '../Modal/ResponsableModal';
 
 interface EntityCardProps {
     entityName: string;
@@ -30,11 +31,12 @@ const EntityCard: React.FC<EntityCardProps> = ({
     fields
 }) => {
     const dispatch = useDispatch();
-    const { showEditModal, updateDisabled } = useSelector((state: RootState) => state.global);
+    const { showEditModal, updateDisabled, addResponsableDisabled } = useSelector((state: RootState) => state.global);
 
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [showResponsableModal, setShowResponsableModal] = useState(false);
     const [showResponsableNotifModal, setShowResponsableNotifModal] = useState(false);
     const [responsableName, setResponsableName] = useState('');
     const [responsablesSubfields, setResponsablesSubfields] = useState<Field[]>([]);
@@ -190,7 +192,16 @@ const EntityCard: React.FC<EntityCardProps> = ({
     }
 
     const handleAddResponsable = () => {
+        setShowResponsableModal(true);
+    }
 
+    const handlecloseAddResponsableModal = () => {
+        if (!addResponsableDisabled) {
+            setShowNotifModal(true);
+        } else {
+            setShowResponsableModal(false);
+            dispatch(setAddResponsableDisabled(true));
+        }
     }
 
     if (!selectedEntity) {
@@ -201,7 +212,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
         <>
             {showEditModal && selectedEntity && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
+                    <div className="relative top-16 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between px-5">
                                 <span className='font-bold uppercase'>({entityName.toUpperCase()}) {selectedEntity.name} {selectedEntity.middleName} {selectedEntity.surname} </span>
@@ -277,6 +288,14 @@ const EntityCard: React.FC<EntityCardProps> = ({
                     content='Are you sure you want to delete this responsable from the student?'
                     submitText='Delete'
                     cancelText="Cancel"
+                />
+            )}
+            {showResponsableModal && (
+                <ResponsableModal
+                    show={showResponsableModal}
+                    fields={responsablesSubfields as Field[]}
+                    onClose={handlecloseAddResponsableModal}
+                    onSubmit={() => { }}
                 />
             )}
         </>

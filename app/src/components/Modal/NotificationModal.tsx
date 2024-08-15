@@ -16,8 +16,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, on
     return (
         <>
             {show && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-1/4 shadow-lg rounded-md bg-white">
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[100]">
+                    <div className="relative top-24 mx-auto p-5 border w-1/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between">
                                 <span className='font-bold uppercase'>{title}</span>
