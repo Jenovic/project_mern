@@ -72,6 +72,7 @@ router.put('/:teacher_id', auth, async (req: Request, res: Response) => {
         if (address) teacher.address = address;
         if (phoneNumber) teacher.phoneNumber = phoneNumber;
         if (email) teacher.email = email;
+        teacher.dateModified = new Date();
 
         await teacher.save();
         res.send('Teacher updated successfully');

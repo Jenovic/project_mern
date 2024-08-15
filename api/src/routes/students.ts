@@ -136,6 +136,7 @@ router.put('/:student_id', auth, async (req: Request, res: Response) => {
         if (address) student.address = address;
         if (phoneNumber) student.phoneNumber = phoneNumber;
         if (responsables) student.responsables = responsables;
+        student.dateModified = new Date();
 
         let classroom;
 

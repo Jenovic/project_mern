@@ -47,6 +47,7 @@ router.put('/:class_id', auth, async (req: Request, res: Response) => {
 
         // update classroom's fields
         if (name) classroom.name = name;
+        classroom.dateModified = new Date();
 
         await classroom.save();
         res.send('Classroom updated successfully');
