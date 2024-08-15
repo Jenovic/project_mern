@@ -37,6 +37,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
     const [showNotifModal, setShowNotifModal] = useState(false);
     const [showResponsableNotifModal, setShowResponsableNotifModal] = useState(false);
     const [responsableName, setResponsableName] = useState('');
+    const [responsablesSubfields, setResponsablesSubfields] = useState<Field[]>([]);
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
@@ -53,6 +54,8 @@ const EntityCard: React.FC<EntityCardProps> = ({
         if (selectedEntity) {
             const filtered = fields.filter((field: Field) => !['__v', 'responsables'].includes(field.name));
             setFilteredFields(filtered);
+            const responsablesField = fields.find(field => field.name === "responsables");
+            setResponsablesSubfields(responsablesField?.subfields || []);
         }
     }, [selectedEntity, updateDisabled, showEditModal]);
 
@@ -145,6 +148,17 @@ const EntityCard: React.FC<EntityCardProps> = ({
     }
 
     const handleDeleteResponsable = () => {
+
+        if (selectedEntity.responsables.length <= 1) {
+            dispatch(setAlert({
+                id: uuidv4(),
+                message: 'At least one responsable is required for the student.',
+                type: 'error',
+            }));
+            setShowResponsableNotifModal(false);
+            return;
+        }
+
         setSelectedEntity((prevEntity: any) => {
             const updatedResponsables = prevEntity.responsables.filter((_: Responsable, idx: number) => idx !== activeTab);
 
@@ -217,6 +231,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                                 setActiveTab={setActiveTab}
                                                 handleResponsableChange={handleResponsableChange}
                                                 handleDeleteResponsableClick={handleDeleteResponsableClick}
+                                                fields={responsablesSubfields as Field[]}
                                             />
                                         </div>
                                     )}

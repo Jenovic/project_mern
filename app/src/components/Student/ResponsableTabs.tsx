@@ -1,7 +1,16 @@
 import FormField from "../Form/FormField";
-import { Responsable } from "../../utils/interfaces";
+import { Responsable, Field, FormData } from "../../utils/interfaces";
 
-const ResponsableTabs = ({ responsables, activeTab, setActiveTab, handleResponsableChange, handleDeleteResponsableClick }: any) => {
+interface ResponsableProps {
+    responsables: Responsable[];
+    activeTab: number;
+    setActiveTab: React.Dispatch<React.SetStateAction<number>>;
+    handleResponsableChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleDeleteResponsableClick: (name: any) => void;
+    fields: Field[];
+}
+
+const ResponsableTabs: React.FC<ResponsableProps> = ({ responsables, activeTab, setActiveTab, handleResponsableChange, handleDeleteResponsableClick, fields }) => {
     return (
         <>
             <ul className="flex border-b">
@@ -13,7 +22,8 @@ const ResponsableTabs = ({ responsables, activeTab, setActiveTab, handleResponsa
                         >
                             {responsable.name} {responsable.surname}
                         </a>
-                        <span className='pr-4 hover:cursor-pointer' onClick={() => handleDeleteResponsableClick(responsable.name)}><i className="fa-solid fa-trash hover:text-sky-500"></i></span>
+                        <span data-testid="delete"
+                            className='pr-4 hover:cursor-pointer' onClick={() => handleDeleteResponsableClick(responsable.name)}><i className="fa-solid fa-trash hover:text-sky-500"></i></span>
                     </li>
                 ))}
             </ul>
@@ -21,13 +31,8 @@ const ResponsableTabs = ({ responsables, activeTab, setActiveTab, handleResponsa
                 <div className='grid lg:grid-cols-2 lg:gap-x-5'>
                     {responsables[activeTab] && (
                         <>
-                            {['name', 'middleName', 'surname', 'relationshipToStudent', 'phoneNumber', 'address', 'email'].map(field => (
-                                <FormField
-                                    key={field}
-                                    field={{ name: field, type: 'text', required: ['name', 'surname', 'relationshipToStudent'].includes(field) }}
-                                    value={responsables[activeTab][field]}
-                                    onChange={handleResponsableChange}
-                                />
+                            {fields.map((field) => (
+                                <FormField key={field.name} field={field} value={responsables[activeTab][field.name as keyof Responsable]} onChange={handleResponsableChange} />
                             ))}
                         </>
                     )}
