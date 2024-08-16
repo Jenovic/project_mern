@@ -37,7 +37,8 @@ const EntityCard: React.FC<EntityCardProps> = ({
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
     const [showResponsableModal, setShowResponsableModal] = useState(false);
-    const [showResponsableNotifModal, setShowResponsableNotifModal] = useState(false);
+    const [showDeleteResponsableNotifModal, setShowDeleteResponsableNotifModal] = useState(false);
+    const [showAddResponsableNotifModal, setShowAddResponsableNotifModal] = useState(false);
     const [responsableName, setResponsableName] = useState('');
     const [responsablesSubfields, setResponsablesSubfields] = useState<Field[]>([]);
     const [activeTab, setActiveTab] = useState(0);
@@ -137,18 +138,6 @@ const EntityCard: React.FC<EntityCardProps> = ({
         }
     };
 
-    const handleCloseNotifModal = () => {
-        setShowNotifModal(false);
-        dispatch(setShowEditModal(false));
-        dispatch(setSelectedEntity(null));
-        dispatch(setUpdateDisabled(true));
-        dispatch(setLoading(true));
-    };
-
-    const handleCloseResponsableModal = () => {
-        setShowResponsableNotifModal(false);
-    }
-
     const handleDeleteResponsable = () => {
 
         if (selectedEntity.responsables.length <= 1) {
@@ -157,7 +146,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                 message: 'At least one responsable is required for the student.',
                 type: 'error',
             }));
-            setShowResponsableNotifModal(false);
+            setShowDeleteResponsableNotifModal(false);
             return;
         }
 
@@ -182,13 +171,34 @@ const EntityCard: React.FC<EntityCardProps> = ({
         setActiveTab((prevActiveTab) => Math.max(0, prevActiveTab - 1));
 
         dispatch(setUpdateDisabled(false));
-        setShowResponsableNotifModal(false);
+        setShowDeleteResponsableNotifModal(false);
     };
 
+    const handleAddResponsableSubmit = (newResponsable: Responsable) => {
+        setSelectedEntity((prevEntity: any) => {
+            const updatedResponsables = [...(prevEntity.responsables || []), newResponsable];
+
+            return {
+                ...prevEntity,
+                responsables: updatedResponsables,
+            };
+        });
+
+        setFormData((prevFormData: FormData) => {
+            const updatedResponsables = [...(prevFormData.responsables || []), newResponsable];
+
+            return {
+                ...prevFormData,
+                responsables: updatedResponsables,
+            };
+        });
+        setShowResponsableModal(false);
+        dispatch(setUpdateDisabled(false));
+    }
 
     const handleDeleteResponsableClick = (name: any) => {
         setResponsableName(name);
-        setShowResponsableNotifModal(true);
+        setShowDeleteResponsableNotifModal(true);
     }
 
     const handleAddResponsable = () => {
@@ -197,7 +207,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
 
     const handlecloseAddResponsableModal = () => {
         if (!addResponsableDisabled) {
-            setShowNotifModal(true);
+            setShowAddResponsableNotifModal(true);
         } else {
             setShowResponsableModal(false);
             dispatch(setAddResponsableDisabled(true));
@@ -271,23 +281,49 @@ const EntityCard: React.FC<EntityCardProps> = ({
             {showNotifModal && (
                 <NotificationModal
                     show={showNotifModal}
-                    onClose={handleCloseNotifModal}
+                    onClose={() => {
+                        setShowNotifModal(false);
+                        dispatch(setShowEditModal(false));
+                        dispatch(setSelectedEntity(null));
+                        dispatch(setUpdateDisabled(true));
+                        dispatch(setLoading(true));
+                    }}
                     onSubmit={handleSubmit}
                     title={`Edit ${entityName}`}
                     content='Save your changes and update the record? Otherwise your changes will not apply.'
                     submitText='Save and Update'
                     cancelText="Don't save"
+                    hideCloseBtn={false}
                 />
             )}
-            {showResponsableNotifModal && (
+            {showDeleteResponsableNotifModal && (
                 <NotificationModal
-                    show={showResponsableNotifModal}
-                    onClose={handleCloseResponsableModal}
+                    show={showDeleteResponsableNotifModal}
+                    onClose={() => setShowDeleteResponsableNotifModal(false)}
                     onSubmit={handleDeleteResponsable}
                     title={`Delete ${responsableName}`}
                     content='Are you sure you want to delete this responsable from the student?'
                     submitText='Delete'
                     cancelText="Cancel"
+                    hideCloseBtn={false}
+                />
+            )}
+            {showAddResponsableNotifModal && (
+                <NotificationModal
+                    show={showAddResponsableNotifModal}
+                    onClose={() => {
+                        setShowAddResponsableNotifModal(false);
+                        setShowResponsableModal(false);
+                        dispatch(setAddResponsableDisabled(true));
+                    }}
+                    onSubmit={() => {
+                        setShowAddResponsableNotifModal(false);
+                    }}
+                    title={`Add Responsable`}
+                    content='Are you sure you want to cancel your changes?'
+                    submitText='No'
+                    cancelText="Yes"
+                    hideCloseBtn={true}
                 />
             )}
             {showResponsableModal && (
@@ -295,7 +331,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
                     show={showResponsableModal}
                     fields={responsablesSubfields as Field[]}
                     onClose={handlecloseAddResponsableModal}
-                    onSubmit={() => { }}
+                    onAddResponsable={handleAddResponsableSubmit}
                 />
             )}
         </>

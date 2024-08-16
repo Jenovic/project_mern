@@ -8,9 +8,10 @@ interface NotificationModalProps {
     content: string;
     submitText: string;
     cancelText: string;
+    hideCloseBtn: boolean;
 }
 
-const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, onSubmit, title, content, submitText, cancelText }) => {
+const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, onSubmit, title, content, submitText, cancelText, hideCloseBtn }) => {
     if (!show) return null;
 
     return (
@@ -21,12 +22,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ show, onClose, on
                         <div className="text-center">
                             <div className="flex items-center justify-between">
                                 <span className='font-bold uppercase'>{title}</span>
-                                <button
-                                    className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700"
-                                    onClick={onClose}
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                </button>
+                                {!hideCloseBtn &&
+                                    <button
+                                        className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700"
+                                        onClick={onClose}
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+                                }
                             </div>
                             <div className="py-5">
                                 {content}

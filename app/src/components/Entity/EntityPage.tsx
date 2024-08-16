@@ -85,6 +85,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                     content={`Are you sure you want to delete ${entityName.toLocaleLowerCase()}: ${selectedEntity.name} ${selectedEntity.middleName} ${selectedEntity.surname} ? You cannot undo this operation`}
                     submitText='Delete'
                     cancelText="Cancel"
+                    hideCloseBtn={false}
                 />
             )}
         </>

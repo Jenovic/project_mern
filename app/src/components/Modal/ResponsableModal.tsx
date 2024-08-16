@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Field, FormData } from '../../utils/interfaces';
+import { Field, FormData, Responsable } from '../../utils/interfaces';
 import { setAddResponsableDisabled } from '../../slices/globalSlice';
 import { RootState } from '../../store';
+import { setAlert } from '../../slices/alertSlice';
+import { v4 as uuidv4 } from 'uuid';
 import FormField from '../Form/FormField';
 
 interface ResponsableModalProps {
     show: boolean;
     fields: Field[];
     onClose: () => void;
-    onSubmit: () => void;
+    onAddResponsable: (newResponsable: Responsable) => void;
 }
 
-const ResponsableModal: React.FC<ResponsableModalProps> = ({ show, fields, onClose, onSubmit }) => {
+const ResponsableModal: React.FC<ResponsableModalProps> = ({ show, fields, onClose, onAddResponsable }) => {
     const { addResponsableDisabled } = useSelector((state: RootState) => state.global);
     const [formData, setFormData] = useState<FormData>({});
+    const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const filtered = fields.filter((field: Field) => !['_id'].includes(field.name));
+        setFilteredFields(filtered);
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -25,6 +33,27 @@ const ResponsableModal: React.FC<ResponsableModalProps> = ({ show, fields, onClo
         });
         dispatch(setAddResponsableDisabled(false));
     };
+
+    const handleModalSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+        if (e) e.preventDefault();
+
+        const emptyRequiredFields = fields.some(field => field.required && !formData[field.name as keyof FormData]);
+        if (emptyRequiredFields) {
+            dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
+            return;
+        }
+
+        const newResponsable = { ...formData };
+
+        // Call a function passed via props to update the parent state
+        // This function should be defined in EntityCard and passed down to ResponsableModal
+        if (typeof onAddResponsable === 'function') {
+            onAddResponsable(newResponsable);
+        }
+        // Close the modal and reset the form
+        setFormData({});
+        dispatch(setAddResponsableDisabled(true));
+    }
 
     if (!show) return null;
 
@@ -43,10 +72,10 @@ const ResponsableModal: React.FC<ResponsableModalProps> = ({ show, fields, onClo
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
-                            <form onSubmit={onSubmit}>
+                            <form onSubmit={handleModalSubmit}>
                                 <div className="py-5">
 
-                                    {fields.map((field) => (
+                                    {filteredFields.map((field) => (
                                         <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                     ))}
                                 </div>

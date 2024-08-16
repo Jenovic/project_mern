@@ -149,6 +149,7 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
                     content='Save your changes and add the record? Otherwise your changes will not apply.'
                     submitText='Save and Add'
                     cancelText="Don't save"
+                    hideCloseBtn={false}
                 />
             )}
         </>
