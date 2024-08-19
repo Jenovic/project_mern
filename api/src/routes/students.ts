@@ -2,8 +2,10 @@ import express, { Request, Response } from "express";
 import mongoose from 'mongoose';
 import { IGetUserAuthInfoRequest } from "../types/express";
 import { body, validationResult, check } from "express-validator";
+import { isValidObjectId } from "../utils/helpers";
 import Student from "../models/Student";
 import Class from "../models/Class";
+import Location from "../models/Location";
 import auth from "../middleware/auth";
 
 const router = express.Router();
@@ -51,12 +53,6 @@ const validateResponsable = body('responsables.*').custom((responsable, { req })
     return true;
 });
 
-
-// Custom validation function to check if a string is a valid MongoDB ObjectID
-const isValidObjectId = (value: string) => {
-    return mongoose.Types.ObjectId.isValid(value);
-};
-
 // @route POST api/students
 // @desc  Register student
 // @access Private
@@ -75,6 +71,14 @@ router.post('/', [
             }
             return true;
         }),
+    check('location_id')
+        .optional() // Make the location_id field optional
+        .custom((value) => {
+            if (value && !isValidObjectId(value)) {
+                throw new Error('Invalid location_id');
+            }
+            return true;
+        }),
     validateResponsable,
 ], auth, async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -83,7 +87,7 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id } = req.body;
+    const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
 
     try {
         let student = await Student.findOne({ name, surname, dob });
@@ -91,19 +95,23 @@ router.post('/', [
         if (student) return res.status(400).json({ errors: [{ msg: 'Student already exists' }] });
 
         let classroom;
+        let location;
 
         if (class_id) {
             classroom = await Class.findOne({ _id: class_id });
-
             if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
+        }
+
+        if (location_id) {
+            location = await Location.findOne({ _id: location_id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
         }
 
         student = new Student({ name, middleName, surname, dob, address, phoneNumber, responsables });
 
         // If a valid class was found, associate the student with the class.
-        if (classroom) {
-            student.class = classroom;
-        }
+        if (classroom) student.class = classroom;
+        if (location) student.location = location;
 
         await student.save();
 
@@ -132,10 +140,18 @@ router.put('/:student_id', [
             }
             return true;
         }),
+    check('location_id')
+        .optional() // Make the location_id field optional
+        .custom((value) => {
+            if (value && !isValidObjectId(value)) {
+                throw new Error('Invalid location_id');
+            }
+            return true;
+        }),
     validateResponsable,
 ],
     auth, async (req: Request, res: Response) => {
-        const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id } = req.body;
+        const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
 
         try {
             // Find the existing student by ID
@@ -153,20 +169,23 @@ router.put('/:student_id', [
             student.dateModified = new Date();
 
             let classroom;
+            let location;
 
             if (class_id) {
                 classroom = await Class.findOne({ _id: class_id });
-
                 if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
             }
 
-            // If a valid class was found, associate the student with the class.
-            if (classroom) {
-                student.class = classroom;
-            } else {
-                // If class_id is not provided or invalid, remove any existing class association.
-                student.class = undefined;
+            if (location_id) {
+                location = await Location.findOne({ _id: location_id });
+                if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
             }
+
+            // If a valid class was found, associate the student with the class.
+            if (classroom) student.class = classroom;
+
+            // If a valid location was found, associate the student with the location.
+            if (location) student.location = location;
 
             await student.save();
 
@@ -186,7 +205,12 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     try {
-        const students = await Student.find().sort({ surname: 1 }).limit(limit).skip(skip);
+        const students = await Student.find()
+            .sort({ surname: 1 })
+            .limit(limit).skip(skip)
+            .populate('class', 'name')
+            .populate('location', 'name')
+            .exec();
         const total = await Student.countDocuments();
 
         if (!students || students.length === 0) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });
@@ -211,7 +235,10 @@ router.get('/', auth, async (req: Request, res: Response) => {
 // @access Private
 router.get('/:student_id', auth, async (req: Request, res: Response) => {
     try {
-        const student = await Student.findById(req.params.student_id);
+        const student = await Student.findById(req.params.student_id)
+            .populate('class', 'name')
+            .populate('location', 'name')
+            .exec();
 
         if (!student) return res.status(404).json({ errors: [{ msg: 'Student does not exist' }] });
 

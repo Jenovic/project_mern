@@ -12,6 +12,7 @@ import Alert from './components/Alert';
 import Dashboard from './components/Dashboard/Dashboard';
 import Students from './components/Student/Students';
 import Teachers from './components/Teacher/Teachers';
+import Classrooms from './components/Classroom/Classrooms';
 import setAuthToken from './utils/setAuthToken';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -51,6 +52,7 @@ const App = () => {
           <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
           <Route path="/students" element={<PrivateRoute element={<Students />} />} />
           <Route path="/teachers" element={<PrivateRoute element={<Teachers />} />} />
+          <Route path="/classrooms" element={<PrivateRoute element={<Classrooms />} />} />
         </Routes>
       </>
     </Router>

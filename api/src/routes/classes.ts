@@ -1,7 +1,9 @@
 import express, { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, check } from "express-validator";
+import { isValidObjectId } from "../utils/helpers";
 import auth from "../middleware/auth";
 import Class from "../models/Class";
+import Location from "../models/Location";
 
 const router = express.Router();
 
@@ -9,7 +11,15 @@ const router = express.Router();
 // @desc  Register a class
 // @access Private
 router.post('/', [
-    body('name').notEmpty().withMessage('Class name is required').escape()
+    body('name').notEmpty().withMessage('Class name is required').escape(),
+    check('location_id')
+        .optional() // Make the location_id field optional
+        .custom((value) => {
+            if (value && !isValidObjectId(value)) {
+                throw new Error('Invalid location_id');
+            }
+            return true;
+        })
 ], auth, async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
@@ -17,29 +27,51 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name } = req.body;
+    const { name, location_id } = req.body;
 
     try {
         let classroom = await Class.findOne({ name });
 
         if (classroom) return res.status(400).json({ errors: [{ msg: 'Classroom already exists' }] });
 
+        let location;
+
+        if (location_id) {
+            location = await Location.findOne({ _id: location_id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+        }
+
         classroom = new Class({ name });
+
+        if (location) {
+            classroom.location = location;
+        }
 
         await classroom.save();
 
         res.send('Classroom created successfuly');
 
     } catch (error: any) {
-
+        console.error(error.message);
+        res.status(500).send('Server error');
     }
 });
 
 // @route POST api/classes
-// @desc  Register a class
+// @desc  Update a class
 // @access Private
-router.put('/:class_id', auth, async (req: Request, res: Response) => {
-    const { name } = req.body;
+router.put('/:class_id', [
+    body('name').notEmpty().withMessage('Class name is required').escape(),
+    check('location_id')
+        .optional() // Make the location_id field optional
+        .custom((value) => {
+            if (value && !isValidObjectId(value)) {
+                throw new Error('Invalid location_id');
+            }
+            return true;
+        })
+], auth, async (req: Request, res: Response) => {
+    const { name, location_id } = req.body;
 
     try {
         let classroom = await Class.findById(req.params.class_id);
@@ -48,6 +80,18 @@ router.put('/:class_id', auth, async (req: Request, res: Response) => {
         // update classroom's fields
         if (name) classroom.name = name;
         classroom.dateModified = new Date();
+
+        let location;
+
+        if (location_id) {
+            location = await Location.findOne({ _id: location_id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+        }
+
+        // If a valid class was found, associate the student with the class.
+        if (location) {
+            classroom.location = location;
+        }
 
         await classroom.save();
         res.send('Classroom updated successfully');
@@ -62,7 +106,9 @@ router.put('/:class_id', auth, async (req: Request, res: Response) => {
 // @access Private
 router.get('/', auth, async (req: Request, res: Response) => {
     try {
-        const classrooms = await Class.find();
+        const classrooms = await Class.find()
+            .populate('location', 'name')
+            .exec();
 
         if (!classrooms) return res.status(404).json({ errors: [{ msg: 'No classrooms found' }] });
 
@@ -78,7 +124,9 @@ router.get('/', auth, async (req: Request, res: Response) => {
 // @access Private
 router.get('/:class_id', auth, async (req: Request, res: Response) => {
     try {
-        const classroom = await Class.findById(req.params.class_id);
+        const classroom = await Class.findById(req.params.class_id)
+            .populate('location', 'name')
+            .exec();
 
         if (!classroom) return res.status(404).json({ errors: [{ msg: 'Classroom does not exist' }] });
 

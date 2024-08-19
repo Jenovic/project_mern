@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IClass } from './Class';
-import { IUser } from './User';
+import { ILocation } from './Location';
 
 // Define the Responsible details schema
 const ResponsableSchema = new Schema({
@@ -32,7 +32,8 @@ const StudentSchema = new Schema({
     address: { type: String, required: true },
     phoneNumber: String,
     responsables: [ResponsableSchema], // Array of Responsible details
-    class: { type: Schema.Types.ObjectId, ref: 'Class' },
+    class: { type: mongoose.Schema.Types.ObjectId, ref: 'class' },
+    location: { type: mongoose.Schema.Types.ObjectId, ref: 'location' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },
 });
@@ -46,6 +47,7 @@ export interface IStudent extends Document {
     phoneNumber?: string;
     responsables: IResponsableSchema[];
     class?: IClass;
+    location?: ILocation;
     dateCreated: Date;
     dateModified: Date;
 }

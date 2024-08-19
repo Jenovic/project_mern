@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from '../../store';
 
 const ClassroomList = () => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const classrooms = useSelector((state: RootState) => state.classrooms.classrooms);
 
     useEffect(() => {
@@ -30,15 +30,15 @@ const ClassroomList = () => {
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr className='bg-sky-700 text-white'>
-                            <th scope="col" className="px-6 py-3">
-                                Name
-                            </th>
+                            <th scope="col" className="px-3 py-3">#</th>
+                            <th scope="col" className="px-6 py-3"> Name</th>
                         </tr>
                     </thead>
                     <tbody>
                         {classrooms.map((classroom) => {
                             return (
                                 <tr key={classroom.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+
                                     <td className="px-6 py-4">
                                         {classroom.name}
                                     </td>

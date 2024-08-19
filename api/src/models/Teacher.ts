@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IClass } from './Class';
-import { IUser } from './User';
+import { ILocation } from './Location';
 
 // Define the Teacher schema
 const TeacherSchema = new Schema({
@@ -11,7 +11,8 @@ const TeacherSchema = new Schema({
     address: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     email: String,
-    class: { type: Schema.Types.ObjectId, ref: 'Class' },
+    class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+    location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },
 });
@@ -25,6 +26,7 @@ export interface ITeacher extends Document {
     phoneNumber: string;
     email?: string;
     class?: IClass;
+    location?: ILocation;
     dateCreated: Date;
     dateModified: Date;
 }

@@ -1,4 +1,5 @@
-export const determineType = (s: string) => {
+export const determineType = (s: string, name?: string) => {
+    console.log(name);
     let res = '';
     switch (s) {
         case 'String':
@@ -11,13 +12,20 @@ export const determineType = (s: string) => {
             res = 'number';
             break;
         case 'ObjectId':
-            res = 'text';
+            // Check if the field name corresponds to 'class' or 'location'
+            if (name === 'class' || name === 'location') {
+                console.log('here!!!!');
+                res = 'select';
+            } else {
+                res = 'text';
+            }
             break;
         default:
             res = 'text';
     }
     return res;
 }
+
 
 export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
