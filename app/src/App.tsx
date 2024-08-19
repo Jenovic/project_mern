@@ -48,15 +48,9 @@ const App = () => {
         <Routes>
           <Route path="/" element={<SplashScreen />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Route>
-          <Route path="/students" element={<PrivateRoute />}>
-            <Route path="/students" element={<Students />} />
-          </Route>
-          <Route path="/teachers" element={<PrivateRoute />}>
-            <Route path="/teachers" element={<Teachers />} />
-          </Route>
+          <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+          <Route path="/students" element={<PrivateRoute element={<Students />} />} />
+          <Route path="/teachers" element={<PrivateRoute element={<Teachers />} />} />
         </Routes>
       </>
     </Router>

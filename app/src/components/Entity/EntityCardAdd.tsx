@@ -91,10 +91,12 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
             return;
         }
 
-        if (!formData.responsables || formData.responsables.length < 1) {
-            if (showNotifModal) setShowNotifModal(false);
-            dispatch(setAlert({ id: uuidv4(), message: 'At least one Responsable is required to add a new student', type: 'error' }));
-            return;
+        if (responsablesSubfields.length > 0) {
+            if (!formData.responsables || formData.responsables.length < 1) {
+                if (showNotifModal) setShowNotifModal(false);
+                dispatch(setAlert({ id: uuidv4(), message: 'At least one Responsable is required to add a new student', type: 'error' }));
+                return;
+            }
         }
 
         try {
@@ -158,7 +160,7 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
         <>
             {showAddModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
+                    <div className="relative top-24 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
                         <div className="text-center">
                             <div className="flex items-center justify-between px-5">
                                 <span className='font-bold uppercase'>{`Add ${entityName}`}</span>
@@ -176,23 +178,24 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
                                             <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                         ))}
                                     </div>
-
-                                    <div className="mt-5">
-                                        <div className='flex justify-between mb-2'>
-                                            <h3 className="font-bold text-lg text-left">Responsables Details</h3>
-                                            <p className='hover:bg-sky-200 hover:shadow p-2 cursor-pointer' title="Add a new responsable" onClick={() => handleAddResponsable()}>Add Responsable <i className="fa-solid fa-plus"></i></p>
+                                    {responsablesSubfields.length > 0 &&
+                                        <div className="mt-5">
+                                            <div className='flex justify-between mb-2'>
+                                                <h3 className="font-bold text-lg text-left">Responsables Details</h3>
+                                                <p className='hover:bg-sky-200 hover:shadow p-2 cursor-pointer' title="Add a new responsable" onClick={() => handleAddResponsable()}>Add Responsable <i className="fa-solid fa-plus"></i></p>
+                                            </div>
+                                            {formData.responsables && formData.responsables.length > 0 && (
+                                                <ResponsableTabs
+                                                    responsables={formData.responsables}
+                                                    activeTab={activeTab}
+                                                    setActiveTab={setActiveTab}
+                                                    handleResponsableChange={handleResponsableChange}
+                                                    handleDeleteResponsableClick={() => { }}
+                                                    fields={responsablesSubfields as Field[]}
+                                                />
+                                            )}
                                         </div>
-                                        {formData.responsables && formData.responsables.length > 0 && (
-                                            <ResponsableTabs
-                                                responsables={formData.responsables}
-                                                activeTab={activeTab}
-                                                setActiveTab={setActiveTab}
-                                                handleResponsableChange={handleResponsableChange}
-                                                handleDeleteResponsableClick={() => { }}
-                                                fields={responsablesSubfields as Field[]}
-                                            />
-                                        )}
-                                    </div>
+                                    }
                                     <div className="flex items-center justify-end gap-5 mt-5">
                                         <button
                                             className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${addDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}

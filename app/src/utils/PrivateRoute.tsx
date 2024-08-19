@@ -1,14 +1,25 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import type { RootState } from '../store';
+import Loader from '../components/Loader';
 
-const PrivateRoute = () => {
+interface PrivateRouteProps {
+  element: JSX.Element;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
 
-  return isAuthenticated && !loading ? <Outlet /> : <Navigate to="/" />;
+  if (loading) {
+    // Optionally, return a loading indicator while checking authentication
+    return <Loader />;
+  }
+
+  return isAuthenticated ? element : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;
+
 
 

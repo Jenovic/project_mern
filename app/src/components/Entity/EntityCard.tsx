@@ -123,6 +123,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
         } finally {
             dispatch(setLoading(true));
             dispatch(setUpdateDisabled(true));
+            dispatch(setSelectedEntity(null));
         }
     };
 

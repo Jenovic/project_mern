@@ -68,6 +68,7 @@ const EntityList: React.FC<EntityListProps> = ({
             }
         }
         loadEntityList();
+        setSelectedEntity(null);
     }, [page, showFull, loading]);
 
     const handleRowSelect = (idx: number, entity: any) => {
