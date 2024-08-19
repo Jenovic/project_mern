@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
-import { setShowAddModal, setAddDisabled } from '../../slices/globalSlice';
+import { setShowAddModal, setAddDisabled, setAddResponsableDisabled } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
-import { Field, FormData } from '../../utils/interfaces';
+import { Field, FormData, Responsable } from '../../utils/interfaces';
 import NotificationModal from '../Modal/NotificationModal';
 import FormField from '../Form/FormField';
+import ResponsableTabs from '../Student/ResponsableTabs';
+import ResponsableModal from '../Modal/ResponsableModal';
 
 interface EntityCardAddProps {
     entityName: string;
@@ -24,7 +26,7 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
     fields
 }) => {
     const dispatch = useDispatch();
-    const { showAddModal, addDisabled } = useSelector((state: RootState) => state.global);
+    const { showAddModal, addDisabled, addResponsableDisabled } = useSelector((state: RootState) => state.global);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -37,12 +39,18 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [activeTab, setActiveTab] = useState(0);
+    const [showResponsableModal, setShowResponsableModal] = useState(false);
+    const [responsablesSubfields, setResponsablesSubfields] = useState<Field[]>([]);
+    const [showAddResponsableNotifModal, setShowAddResponsableNotifModal] = useState(false);
 
     useEffect(() => {
         const filtered = fields.filter(
             (field: Field) => !['__v', 'responsables', 'dateCreated', 'dateModified', '_id'].includes(field.name)
         );
         setFilteredFields(filtered);
+        const responsablesField = fields.find(field => field.name === "responsables");
+        setResponsablesSubfields(responsablesField?.subfields || []);
     }, [addDisabled, showAddModal]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,12 +62,38 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
         dispatch(setAddDisabled(false));
     };
 
+    const handleResponsableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+
+        setFormData(prevFormData => {
+            const updatedResponsables = [...(prevFormData.responsables || [])];
+            updatedResponsables[activeTab] = {
+                ...updatedResponsables[activeTab],
+                [name]: value,
+            };
+
+            return {
+                ...prevFormData,
+                responsables: updatedResponsables,
+            };
+        });
+
+        dispatch(setAddDisabled(false));
+    };
+
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
 
         const emptyRequiredFields = fields.some(field => field.required && !formData[field.name as keyof FormData]);
         if (emptyRequiredFields) {
             dispatch(setAlert({ id: uuidv4(), message: 'Please fill in all required fields', type: 'error' }));
+            setShowNotifModal(false);
+            return;
+        }
+
+        if (!formData.responsables || formData.responsables.length < 1) {
+            if (showNotifModal) setShowNotifModal(false);
+            dispatch(setAlert({ id: uuidv4(), message: 'At least one Responsable is required to add a new student', type: 'error' }));
             return;
         }
 
@@ -69,13 +103,26 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
             dispatch(addEntity(response.data));
             dispatch(setShowAddModal(false));
         } catch (error: any) {
-            const message = error.msg;
-            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+            dispatch(setAlert({ id: uuidv4(), message: error.message, type: 'error' }));
         } finally {
             dispatch(setLoading(true));
             dispatch(setAddDisabled(true));
         }
     };
+
+    const handleAddResponsableSubmit = (newResponsable: Responsable) => {
+        setFormData((prevFormData: FormData) => {
+            const updatedResponsables = [...(prevFormData.responsables || []), newResponsable];
+
+            return {
+                ...prevFormData,
+                responsables: updatedResponsables,
+            };
+        });
+        setShowResponsableModal(false);
+        dispatch(setAddResponsableDisabled(true));
+        dispatch(setAddDisabled(false));
+    }
 
     const handleCloseModal = () => {
         if (addDisabled) {
@@ -93,6 +140,19 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
         dispatch(setAddDisabled(true));
         dispatch(setLoading(true));
     };
+
+    const handlecloseAddResponsableModal = () => {
+        if (!addResponsableDisabled) {
+            setShowAddResponsableNotifModal(true);
+        } else {
+            setShowResponsableModal(false);
+            dispatch(setAddResponsableDisabled(true));
+        }
+    }
+
+    const handleAddResponsable = () => {
+        setShowResponsableModal(true);
+    }
 
     return (
         <>
@@ -116,23 +176,38 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
                                             <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
                                         ))}
                                     </div>
-                                    <div>
-                                        <div className="flex items-center justify-end gap-5">
-                                            <button
-                                                className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${addDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
-                                                type="submit"
-                                                disabled={addDisabled}
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                                onClick={() => handleCloseModal()}
-                                            >
-                                                Cancel
-                                            </button>
+
+                                    <div className="mt-5">
+                                        <div className='flex justify-between mb-2'>
+                                            <h3 className="font-bold text-lg text-left">Responsables Details</h3>
+                                            <p className='hover:bg-sky-200 hover:shadow p-2 cursor-pointer' title="Add a new responsable" onClick={() => handleAddResponsable()}>Add Responsable <i className="fa-solid fa-plus"></i></p>
                                         </div>
+                                        {formData.responsables && formData.responsables.length > 0 && (
+                                            <ResponsableTabs
+                                                responsables={formData.responsables}
+                                                activeTab={activeTab}
+                                                setActiveTab={setActiveTab}
+                                                handleResponsableChange={handleResponsableChange}
+                                                handleDeleteResponsableClick={() => { }}
+                                                fields={responsablesSubfields as Field[]}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="flex items-center justify-end gap-5 mt-5">
+                                        <button
+                                            className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${addDisabled ? 'bg-gray-600' : 'bg-sky-600 hover:bg-sky-400'}`}
+                                            type="submit"
+                                            disabled={addDisabled}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                            onClick={() => handleCloseModal()}
+                                        >
+                                            Cancel
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -150,6 +225,32 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
                     submitText='Save and Add'
                     cancelText="Don't save"
                     hideCloseBtn={false}
+                />
+            )}
+            {showAddResponsableNotifModal && (
+                <NotificationModal
+                    show={showAddResponsableNotifModal}
+                    onClose={() => {
+                        setShowAddResponsableNotifModal(false);
+                        setShowResponsableModal(false);
+                        dispatch(setAddResponsableDisabled(true));
+                    }}
+                    onSubmit={() => {
+                        setShowAddResponsableNotifModal(false);
+                    }}
+                    title={`Add Responsable`}
+                    content='Are you sure you want to cancel your changes?'
+                    submitText='No'
+                    cancelText="Yes"
+                    hideCloseBtn={true}
+                />
+            )}
+            {showResponsableModal && (
+                <ResponsableModal
+                    show={showResponsableModal}
+                    fields={responsablesSubfields as Field[]}
+                    onClose={handlecloseAddResponsableModal}
+                    onAddResponsable={handleAddResponsableSubmit}
                 />
             )}
         </>

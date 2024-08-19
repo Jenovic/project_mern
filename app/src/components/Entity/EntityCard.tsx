@@ -119,8 +119,7 @@ const EntityCard: React.FC<EntityCardProps> = ({
             dispatch(updateEntity(response.data));
             dispatch(setShowEditModal(false));
         } catch (error: any) {
-            const message = error.msg;
-            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+            dispatch(setAlert({ id: uuidv4(), message: error.message, type: 'error' }));
         } finally {
             dispatch(setLoading(true));
             dispatch(setUpdateDisabled(true));

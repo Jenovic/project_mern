@@ -26,7 +26,7 @@ const getFieldTypes = (): FieldType[] => {
 router.post('/', [
     body('name').notEmpty().withMessage('Name is required').escape(),
     body('surname').notEmpty().withMessage('Surname is required').escape(),
-    body('phoneNumber').isLength({ min: 10, max: 10 }).withMessage('Invalid phone number'),
+    body('phoneNumber').isLength({ min: 10, max: 15 }).withMessage('Invalid phone number'),
     body('address').notEmpty().withMessage('Address is required').escape(),
     body('dob').notEmpty().withMessage('DOB is required').isISO8601().withMessage('Invalid date format'),
 ], auth, async (req: Request, res: Response) => {
