@@ -101,7 +101,7 @@ const EntityList: React.FC<EntityListProps> = ({
                             </thead>
                             <tbody className={`[&>*:nth-child(${rowIndex + 1})]:bg-sky-100`}>
                                 {displayedEntities.map((entity, idx) => (
-                                    <tr key={entity.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx, entity)}>
+                                    <tr key={entity.id || idx} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx, entity)}>
                                         <td className="px-3">
                                             <span className='flex items-center relative'>
                                                 <span className='pr-2'>{(page - 1) * 10 + idx + 1}</span>
