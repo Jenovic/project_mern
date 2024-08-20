@@ -5,6 +5,7 @@ import studentReducer from './slices/studentSlice';
 import teacherReducer from './slices/teacherSlice';
 import classroomReducer from './slices/classroomSlice';
 import globalReducer from './slices/globalSlice';
+import locationReducer from './slices/locationSlice';
 
 const rootReducer = combineReducers({
     alerts: alertReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     students: studentReducer,
     teachers: teacherReducer,
     classrooms: classroomReducer,
-    global: globalReducer
+    global: globalReducer,
+    locations: locationReducer
 })
 
 const store = configureStore({

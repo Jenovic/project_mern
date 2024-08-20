@@ -63,19 +63,19 @@ router.post('/', [
     body('address').notEmpty().withMessage('Address is required').escape(),
     body('phoneNumber').isLength({ min: 0, max: 15 }).withMessage('Invalid phone number'),
     body('responsables').isArray({ min: 1 }).withMessage('At least one Responsable is required'),
-    check('class_id')
-        .optional() // Make the class_id field optional
+    body('class')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid class_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid class structure (must contain valid _id and name)');
             }
             return true;
         }),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
         }),
@@ -87,31 +87,28 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class: classObj, location: locationObj } = req.body;
 
     try {
         let student = await Student.findOne({ name, surname, dob });
 
         if (student) return res.status(400).json({ errors: [{ msg: 'Student already exists' }] });
 
-        let classroom;
-        let location;
-
-        if (class_id) {
-            classroom = await Class.findOne({ _id: class_id });
-            if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
-        }
-
-        if (location_id) {
-            location = await Location.findOne({ _id: location_id });
-            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
-        }
-
         student = new Student({ gender, name, middleName, surname, dob, address, phoneNumber, responsables });
 
-        // If a valid class was found, associate the student with the class.
-        if (classroom) student.class = classroom;
-        if (location) student.location = location;
+        // Update class if provided
+        if (classObj) {
+            const classroom = await Class.findOne({ _id: classObj._id });
+            if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
+            student.class = classroom;
+        }
+
+        // Update location if provided
+        if (locationObj) {
+            const location = await Location.findOne({ _id: locationObj._id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+            student.location = location;
+        }
 
         await student.save();
 
@@ -132,26 +129,26 @@ router.put('/:student_id', [
     body('address').notEmpty().withMessage('Address is required').escape(),
     body('phoneNumber').isLength({ min: 0, max: 15 }).withMessage('Invalid phone number'),
     body('responsables').isArray({ min: 1 }).withMessage('At least one Responsable is required'),
-    check('class_id')
-        .optional() // Make the class_id field optional
+    body('class')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid class_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid class structure (must contain valid _id and name)');
             }
             return true;
         }),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
         }),
     validateResponsable,
 ],
     auth, async (req: Request, res: Response) => {
-        const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
+        const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class: classObj, location: locationObj } = req.body;
 
         try {
             // Find the existing student by ID
@@ -169,24 +166,19 @@ router.put('/:student_id', [
             if (responsables) student.responsables = responsables;
             student.dateModified = new Date();
 
-            let classroom;
-            let location;
-
-            if (class_id) {
-                classroom = await Class.findOne({ _id: class_id });
+            // Update class if provided
+            if (classObj) {
+                const classroom = await Class.findOne({ _id: classObj._id });
                 if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
+                student.class = classroom;
             }
 
-            if (location_id) {
-                location = await Location.findOne({ _id: location_id });
+            // Update location if provided
+            if (locationObj) {
+                const location = await Location.findOne({ _id: locationObj._id });
                 if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+                student.location = location;
             }
-
-            // If a valid class was found, associate the student with the class.
-            if (classroom) student.class = classroom;
-
-            // If a valid location was found, associate the student with the location.
-            if (location) student.location = location;
 
             await student.save();
 

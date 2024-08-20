@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { loadUser } from './slices/authSlice';
+import { loadLocations } from './slices/locationSlice';
 import { loadUserSvc } from './services/auth';
+import { getLocationsSvc } from './services/locations';
 import { useDispatch } from 'react-redux';
 import { setAlert } from './slices/alertSlice';
 import PrivateRoute from './utils/PrivateRoute';
@@ -28,7 +30,11 @@ const App = () => {
     if (localStorage.token) {
       try {
         const user = await loadUserSvc();
+        const locations = await getLocationsSvc();
+
         dispatch(loadUser(user.data));
+        dispatch(loadLocations(locations.data));
+
       } catch (error: any) {
         console.log(error);
         const message = error.message;

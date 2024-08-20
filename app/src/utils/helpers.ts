@@ -1,5 +1,4 @@
 export const determineType = (s: string, name?: string) => {
-    console.log(name);
     let res = '';
     switch (s) {
         case 'String':

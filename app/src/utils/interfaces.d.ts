@@ -13,6 +13,14 @@ export interface FormData {
     address?: string;
     phoneNumber?: string;
     responsables?: Responsable[];
+    class?: {
+        _id: string;
+        name: string;
+    };
+    location?: {
+        _id: string;
+        name: string;
+    }
 }
 
 export interface Responsable {

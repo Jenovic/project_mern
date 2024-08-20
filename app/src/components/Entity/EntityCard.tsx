@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../slices/alertSlice';
 import { setShowEditModal, setUpdateDisabled, setAddResponsableDisabled } from '../../slices/globalSlice';
@@ -32,6 +32,18 @@ const EntityCard: React.FC<EntityCardProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { showEditModal, updateDisabled, addResponsableDisabled } = useSelector((state: RootState) => state.global);
+    const locationOptions = useSelector((state: RootState) => state.locations?.locations);
+    const classOptions = useSelector((state: RootState) => state.classrooms?.classrooms);
+
+    const memoizedLocationOptions = useMemo(
+        () => locationOptions?.map((loc: any) => ({ value: loc._id, label: loc.name })),
+        [locationOptions]
+    );
+
+    const memoizedClassOptions = useMemo(
+        () => classOptions.map((cls: any) => ({ value: cls._id, label: cls.name })),
+        [classOptions]
+    );
 
     const [formData, setFormData] = useState<FormData>({});
     const [filteredFields, setFilteredFields] = useState<Field[]>([]);
@@ -62,12 +74,32 @@ const EntityCard: React.FC<EntityCardProps> = ({
         }
     }, [selectedEntity, updateDisabled, showEditModal]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        if (name === 'location') {
+            const selectedLocation = memoizedLocationOptions?.find(option => option.value === value);
+            setFormData({
+                ...formData,
+                location: {
+                    _id: selectedLocation?.value,
+                    name: selectedLocation?.label,
+                },
+            });
+        } else if (name === 'class') {
+            const selectedClass = memoizedClassOptions?.find(option => option.value === value);
+            setFormData({
+                ...formData,
+                class: {
+                    _id: selectedClass?.value,
+                    name: selectedClass?.label,
+                },
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
         dispatch(setUpdateDisabled(false));
     };
 
@@ -237,7 +269,13 @@ const EntityCard: React.FC<EntityCardProps> = ({
                                 <form onSubmit={handleSubmit}>
                                     <div className='grid lg:grid-cols-2 lg:gap-x-5'>
                                         {filteredFields.map((field) => (
-                                            <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
+                                            <FormField
+                                                key={field.name}
+                                                field={field}
+                                                value={formData[field.name as keyof FormData] as string}
+                                                onChange={handleChange}
+                                                options={field.name === 'location' ? memoizedLocationOptions : field.name === 'class' ? memoizedClassOptions : undefined}
+                                            />
                                         ))}
                                     </div>
                                     {formData.responsables && formData.responsables.length > 0 && (
