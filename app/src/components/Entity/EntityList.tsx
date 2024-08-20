@@ -45,6 +45,8 @@ const EntityList: React.FC<EntityListProps> = ({
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
 
+    console.log(entities);
+
     useEffect(() => {
         const loadEntityList = async () => {
             try {
@@ -121,7 +123,9 @@ const EntityList: React.FC<EntityListProps> = ({
                                                     ))
                                                     : entity[column.accessor] instanceof Date
                                                         ? format(entity[column.accessor], 'MM/dd/yyyy') // Format the date
-                                                        : entity[column.accessor]}
+                                                        : typeof entity[column.accessor] === 'object' && entity[column.accessor] !== null
+                                                            ? `${entity[column.accessor].name}` // Handle nested object, e.g., location
+                                                            : entity[column.accessor]}
                                             </td>
                                         ))}
                                     </tr>
