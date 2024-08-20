@@ -3,7 +3,7 @@ import { ILocation } from './Location';
 
 // Define the Class schema
 const ClassSchema = new Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'location' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },

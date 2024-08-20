@@ -226,6 +226,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
             pages: Math.ceil(total / limit),
             fieldTypes
         });
+
     } catch (error: any) {
         console.error(error.message);
         res.status(500).send('Server Error');

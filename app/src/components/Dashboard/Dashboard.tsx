@@ -33,7 +33,7 @@ const Dashboard = () => {
                                 </div>
                                 <StudentList showFull={false} />
                                 <TeacherList showFull={false} />
-                                <ClassroomList />
+                                <ClassroomList showFull={false} />
                             </div>
                         </div>
                     </div>

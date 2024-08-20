@@ -25,10 +25,10 @@ interface StudentState {
     students: Student[];
     fields: [];
     responsibleFields: [];
-    loading: boolean,
-    updateDisabled: boolean,
-    selectedStudent: any,
-    studentLoading: boolean,
+    loading: boolean;
+    updateDisabled: boolean;
+    selectedStudent: any;
+    studentLoading: boolean;
 }
 
 const initialState: StudentState = {

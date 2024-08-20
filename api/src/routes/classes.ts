@@ -7,6 +7,22 @@ import Location from "../models/Location";
 
 const router = express.Router();
 
+interface FieldType {
+    name: string;
+    type: string;
+    required: boolean;
+}
+
+const getFieldTypes = (): FieldType[] => {
+    const schema = Class.schema.paths;
+    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
+        name: field,
+        type: schema[field].instance,
+        required: !!schema[field].isRequired,
+    }));
+    return fieldTypes;
+};
+
 // @route POST api/classes
 // @desc  Register a class
 // @access Private
@@ -105,14 +121,31 @@ router.put('/:class_id', [
 // @desc  get all classrooms
 // @access Private
 router.get('/', auth, async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
     try {
         const classrooms = await Class.find()
+            .sort({ name: 1 })
+            .limit(limit).skip(skip)
             .populate('location', 'name')
             .exec();
 
+        const total = await Class.countDocuments();
+
         if (!classrooms) return res.status(404).json({ errors: [{ msg: 'No classrooms found' }] });
 
-        res.json(classrooms);
+        const fieldTypes = getFieldTypes();
+
+        res.json({
+            classrooms,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+            fieldTypes
+        });
+
     } catch (error: any) {
         console.error(error.message);
         res.status(500).send('Server Error');

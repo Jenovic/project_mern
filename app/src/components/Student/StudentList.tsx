@@ -25,6 +25,7 @@ const StudentList: React.FC<{ showFull: boolean }> = ({ showFull }) => {
                 { label: 'Name', accessor: 'name' },
                 { label: 'Middle Name', accessor: 'middleName' },
                 { label: 'Surname', accessor: 'surname' },
+                { label: 'Gender', accessor: 'gender' },
                 { label: 'DOB', accessor: 'dob' },
                 { label: 'Address', accessor: 'address' },
                 { label: 'Phone No.', accessor: 'phoneNumber' },
