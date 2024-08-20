@@ -13,13 +13,13 @@ const LocationSchema = new mongoose.Schema({
 
 export interface ILocation extends Document {
     name: string;
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    zipcode: string;
-    dateCreated: Date;
-    dateModified: Date;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zipcode?: string;
+    dateCreated?: Date;
+    dateModified?: Date;
 }
 
 const LocationModel = mongoose.model<ILocation>('location', LocationSchema);

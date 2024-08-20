@@ -115,7 +115,7 @@ router.post('/', [
         res.send('Student registered successfuly');
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -185,7 +185,7 @@ router.put('/:student_id', [
             res.send('Student updated successfully');
         } catch (error: any) {
             console.error(error.message);
-            res.status(500).send('Server error');
+            res.status(500).send(error.message);
         }
     });
 
@@ -221,7 +221,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -241,7 +241,7 @@ router.get('/:student_id', auth, async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -255,7 +255,7 @@ router.delete('/:student_id', auth, async (req: Request, res: Response) => {
         res.json({ msg: 'Student deleted' });
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
