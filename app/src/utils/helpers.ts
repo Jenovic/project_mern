@@ -3,7 +3,11 @@ export const determineType = (s: string, name?: string) => {
     let res = '';
     switch (s) {
         case 'String':
-            res = 'text';
+            if (name === 'gender' || name === 'relationshipToStudent') {
+                res = 'select';
+            } else {
+                res = 'text';
+            }
             break;
         case 'Date':
             res = 'date';
@@ -12,9 +16,7 @@ export const determineType = (s: string, name?: string) => {
             res = 'number';
             break;
         case 'ObjectId':
-            // Check if the field name corresponds to 'class' or 'location'
-            if (name === 'class' || name === 'location') {
-                console.log('here!!!!');
+            if (name === 'class' || name === 'location' || name === 'gender') {
                 res = 'select';
             } else {
                 res = 'text';

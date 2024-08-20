@@ -32,16 +32,26 @@ const ClassroomList = () => {
                         <tr className='bg-sky-700 text-white'>
                             <th scope="col" className="px-3 py-3">#</th>
                             <th scope="col" className="px-6 py-3"> Name</th>
+                            <th scope="col" className="px-6 py-3"> Location</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {classrooms.map((classroom) => {
+                        {classrooms.map((classroom, idx) => {
                             return (
                                 <tr key={classroom.name} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-
+                                    <td className="px-3">
+                                        <span className='flex items-center relative'>
+                                            <span className='pr-2'>{idx}</span>
+                                            <i
+                                                className="fa-regular fa-pen-to-square text-lg px-2 py-3 cursor-pointer hover:bg-sky-500 hover:text-white"
+                                                onClick={() => { }}
+                                            ></i>
+                                        </span>
+                                    </td>
                                     <td className="px-6 py-4">
                                         {classroom.name}
                                     </td>
+                                    <td className="px-6 py-4">Kasapa</td>
                                 </tr>
                             )
                         })}

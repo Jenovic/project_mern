@@ -10,7 +10,7 @@ const ResponsableSchema = new Schema({
     phoneNumber: { type: String, required: true },
     address: { type: String, required: true },
     email: String,
-    relationshipToStudent: { type: String, required: true },
+    relationshipToStudent: { type: String, enum: ['father', 'mother', 'sibling', 'relative', 'sponsor'], default: 'father', required: true },
 });
 
 export interface IResponsableSchema {
@@ -25,6 +25,7 @@ export interface IResponsableSchema {
 
 // Define the Student schema
 const StudentSchema = new Schema({
+    gender: { type: String, enum: ['male', 'female'], default: 'male' },
     name: { type: String, required: true, index: true },
     middleName: String,
     surname: { type: String, required: true },
@@ -39,6 +40,7 @@ const StudentSchema = new Schema({
 });
 
 export interface IStudent extends Document {
+    gender: string;
     name: string;
     middleName?: string;
     surname: string;

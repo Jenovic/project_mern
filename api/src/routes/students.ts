@@ -87,7 +87,7 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
 
     try {
         let student = await Student.findOne({ name, surname, dob });
@@ -107,7 +107,7 @@ router.post('/', [
             if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
         }
 
-        student = new Student({ name, middleName, surname, dob, address, phoneNumber, responsables });
+        student = new Student({ gender, name, middleName, surname, dob, address, phoneNumber, responsables });
 
         // If a valid class was found, associate the student with the class.
         if (classroom) student.class = classroom;
@@ -151,7 +151,7 @@ router.put('/:student_id', [
     validateResponsable,
 ],
     auth, async (req: Request, res: Response) => {
-        const { name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
+        const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class_id, location_id } = req.body;
 
         try {
             // Find the existing student by ID
@@ -159,6 +159,7 @@ router.put('/:student_id', [
             if (!student) return res.status(400).json({ errors: [{ msg: 'Student not found' }] });
 
             // Update the student's fields
+            if (gender) student.gender = gender;
             if (name) student.name = name;
             if (middleName) student.middleName = middleName;
             if (surname) student.surname = surname;
@@ -211,6 +212,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
+
         const total = await Student.countDocuments();
 
         if (!students || students.length === 0) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });

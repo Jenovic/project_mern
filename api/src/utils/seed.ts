@@ -15,10 +15,11 @@ mongoose.connect(db, {
 
 const generateMockStudent = (): IStudent => {
     const mockStudent = new StudentModel({
+        gender: faker.helpers.arrayElement(['male', 'female']),
         name: faker.person.firstName(),
         middleName: faker.person.firstName(),
         surname: faker.person.lastName(),
-        dob: faker.date.birthdate(),
+        dob: faker.date.birthdate({ min: 1990, max: 2010, mode: 'year' }),
         address: faker.location.streetAddress(),
         phoneNumber: faker.phone.number(),
         responsables: [
@@ -29,7 +30,7 @@ const generateMockStudent = (): IStudent => {
                 middleName: faker.person.firstName(),
                 surname: faker.person.lastName(),
                 phoneNumber: faker.phone.number(),
-                relationshipToStudent: 'Parent',
+                relationshipToStudent: faker.helpers.arrayElement(['father', 'mother', 'sibling', 'relative', 'sponsor']),
             },
             {
                 address: faker.location.streetAddress(),
@@ -38,24 +39,31 @@ const generateMockStudent = (): IStudent => {
                 middleName: faker.person.firstName(),
                 surname: faker.person.lastName(),
                 phoneNumber: faker.phone.number(),
-                relationshipToStudent: 'Parent',
+                relationshipToStudent: faker.helpers.arrayElement(['father', 'mother', 'sibling', 'relative', 'sponsor']),
             },
         ],
-        date: faker.date.past(),
+        class: faker.database.mongodbObjectId(), // Mock class ObjectId
+        location: faker.database.mongodbObjectId(), // Mock location ObjectId
+        dateCreated: faker.date.recent(),
+        dateModified: faker.date.recent(),
     });
     return mockStudent;
 };
 
 const generateMockTeacher = (): ITeacher => {
     const mockTeacher = new TeacherModel({
+        gender: faker.helpers.arrayElement(['male', 'female']),
         name: faker.person.firstName(),
         middleName: faker.person.firstName(),
         surname: faker.person.lastName(),
-        dob: faker.date.birthdate(),
+        dob: faker.date.birthdate({ min: 1960, max: 2000, mode: 'year' }),
         address: faker.location.streetAddress(),
         phoneNumber: faker.phone.number(),
         email: faker.internet.email(),
-        date: faker.date.past()
+        class: faker.database.mongodbObjectId(), // Mock class ObjectId
+        location: faker.database.mongodbObjectId(), // Mock location ObjectId
+        dateCreated: faker.date.recent(),
+        dateModified: faker.date.recent(),
     });
     return mockTeacher;
 };

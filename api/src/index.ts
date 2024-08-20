@@ -5,6 +5,7 @@ import authRouter from './routes/auth';
 import studentRouter from './routes/students';
 import teacherRouter from './routes/teachers';
 import classRouter from './routes/classes';
+import locationRouter from './routes/locations';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/students', studentRouter);
 app.use('/api/teachers', teacherRouter);
 app.use('/api/classes', classRouter);
+app.use('/api/locations', locationRouter)
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);

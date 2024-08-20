@@ -10,8 +10,15 @@ export const getTeachersSvc = async (page = 1, limit = 10) => {
             limit
         }
     };
-    const res = await axios.get('api/teachers', config);
-    return res;
+
+    try {
+
+        const res = await axios.get('api/teachers', config);
+        return res;
+    } catch (error) {
+        console.error('Error fetching teachers:', error);
+        throw error;
+    }
 }
 
 export const getTeacherSvc = async (teacherId: number) => {

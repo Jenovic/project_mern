@@ -55,7 +55,7 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
 
     try {
         let teacher = await Teacher.findOne({ name, surname, dob });
@@ -75,7 +75,7 @@ router.post('/', [
             if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
         }
 
-        teacher = new Teacher({ name, middleName, surname, dob, address, phoneNumber, email });
+        teacher = new Teacher({ gender, name, middleName, surname, dob, address, phoneNumber, email });
 
         if (classroom) teacher.class = classroom;
         if (location) teacher.location = location;
@@ -110,13 +110,14 @@ router.put('/:teacher_id', [
             return true;
         }),
 ], auth, async (req: Request, res: Response) => {
-    const { name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
 
     try {
         let teacher = await Teacher.findById(req.params.teacher_id);
         if (!teacher) return res.status(400).json({ errors: [{ msg: 'Teacher not found' }] });
 
         // Update the teacher's fields
+        if (gender) teacher.gender = gender;
         if (name) teacher.name = name;
         if (middleName) teacher.middleName = middleName;
         if (surname) teacher.surname = surname;
@@ -165,11 +166,11 @@ router.get('/', auth, async (req: Request, res: Response) => {
     try {
         const teachers = await Teacher.find()
             .sort({ surname: 1 })
-            .limit(limit)
-            .skip(skip)
+            .limit(limit).skip(skip)
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
+
         const total = await Teacher.countDocuments();
 
         if (!teachers || teachers.length === 0) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
