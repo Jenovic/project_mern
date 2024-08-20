@@ -28,14 +28,14 @@ const getFieldTypes = (): FieldType[] => {
 // @access Private
 router.post('/', [
     body('name').notEmpty().withMessage('Class name is required').escape(),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
-        })
+        }),
 ], auth, async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
@@ -43,23 +43,19 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, location_id } = req.body;
+    const { name, location: locationObj } = req.body;
 
     try {
         let classroom = await Class.findOne({ name });
 
         if (classroom) return res.status(400).json({ errors: [{ msg: 'Classroom already exists' }] });
 
-        let location;
-
-        if (location_id) {
-            location = await Location.findOne({ _id: location_id });
-            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
-        }
-
         classroom = new Class({ name });
 
-        if (location) {
+        // Update location if provided
+        if (locationObj) {
+            const location = await Location.findOne({ _id: locationObj._id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
             classroom.location = location;
         }
 
@@ -69,7 +65,7 @@ router.post('/', [
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -78,16 +74,16 @@ router.post('/', [
 // @access Private
 router.put('/:class_id', [
     body('name').notEmpty().withMessage('Class name is required').escape(),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
-        })
+        }),
 ], auth, async (req: Request, res: Response) => {
-    const { name, location_id } = req.body;
+    const { name, location: locationObj } = req.body;
 
     try {
         let classroom = await Class.findById(req.params.class_id);
@@ -97,15 +93,10 @@ router.put('/:class_id', [
         if (name) classroom.name = name;
         classroom.dateModified = new Date();
 
-        let location;
-
-        if (location_id) {
-            location = await Location.findOne({ _id: location_id });
+        // Update location if provided
+        if (locationObj) {
+            const location = await Location.findOne({ _id: locationObj._id });
             if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
-        }
-
-        // If a valid class was found, associate the student with the class.
-        if (location) {
             classroom.location = location;
         }
 
@@ -113,7 +104,7 @@ router.put('/:class_id', [
         res.send('Classroom updated successfully');
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -148,7 +139,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -167,7 +158,7 @@ router.get('/:class_id', auth, async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -181,7 +172,7 @@ router.delete('/:class_id', auth, async (req: Request, res: Response) => {
         res.json({ msg: 'Classroom deleted' });
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 

@@ -18,7 +18,7 @@ router.get('/', auth, async (req: IGetUserAuthInfoRequest, res: Response) => {
         res.json(user);
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -68,7 +68,7 @@ router.post('/', [
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 
 });

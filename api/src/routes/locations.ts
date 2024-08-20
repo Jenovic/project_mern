@@ -32,7 +32,7 @@ router.post('/', [
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -59,7 +59,7 @@ router.put('/:location_id', auth, async (req: Request, res: Response) => {
         res.send('Location updated successfully');
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -75,7 +75,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
         res.json(locations);
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 

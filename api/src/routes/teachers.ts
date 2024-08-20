@@ -32,19 +32,19 @@ router.post('/', [
     body('phoneNumber').isLength({ min: 10, max: 15 }).withMessage('Invalid phone number'),
     body('address').notEmpty().withMessage('Address is required').escape(),
     body('dob').notEmpty().withMessage('DOB is required').isISO8601().withMessage('Invalid date format'),
-    check('class_id')
-        .optional() // Make the class_id field optional
+    body('class')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid class_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid class structure (must contain valid _id and name)');
             }
             return true;
         }),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
         }),
@@ -55,37 +55,35 @@ router.post('/', [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class: classObj, location: locationObj } = req.body;
 
     try {
         let teacher = await Teacher.findOne({ name, surname, dob });
 
         if (teacher) return res.status(400).json({ errors: [{ msg: 'Teacher already exists' }] });
 
-        let classroom;
-        let location;
-
-        if (class_id) {
-            classroom = await Class.findOne({ _id: class_id });
-            if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
-        }
-
-        if (location_id) {
-            location = await Location.findOne({ _id: location_id });
-            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
-        }
-
         teacher = new Teacher({ gender, name, middleName, surname, dob, address, phoneNumber, email });
 
-        if (classroom) teacher.class = classroom;
-        if (location) teacher.location = location;
+        // Update class if provided
+        if (classObj) {
+            const classroom = await Class.findOne({ _id: classObj._id });
+            if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
+            teacher.class = classroom;
+        }
+
+        // Update location if provided
+        if (locationObj) {
+            const location = await Location.findOne({ _id: locationObj._id });
+            if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+            teacher.location = location;
+        }
 
         await teacher.save();
 
         res.send('Teacher registered successfuly')
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -93,24 +91,29 @@ router.post('/', [
 // @desc  Update a teacher
 // @access Private
 router.put('/:teacher_id', [
-    check('class_id')
-        .optional() // Make the class_id field optional
+    body('name').notEmpty().withMessage('Name is required').escape(),
+    body('surname').notEmpty().withMessage('Surname is required').escape(),
+    body('phoneNumber').isLength({ min: 10, max: 15 }).withMessage('Invalid phone number'),
+    body('address').notEmpty().withMessage('Address is required').escape(),
+    body('dob').notEmpty().withMessage('DOB is required').isISO8601().withMessage('Invalid date format'),
+    body('class')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid class_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid class structure (must contain valid _id and name)');
             }
             return true;
         }),
-    check('location_id')
-        .optional() // Make the location_id field optional
+    body('location')
+        .optional()
         .custom((value) => {
-            if (value && !isValidObjectId(value)) {
-                throw new Error('Invalid location_id');
+            if (value && (!isValidObjectId(value._id) || !value.name)) {
+                throw new Error('Invalid location structure (must contain valid _id and name)');
             }
             return true;
         }),
 ], auth, async (req: Request, res: Response) => {
-    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class_id, location_id } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class: classObj, location: locationObj } = req.body;
 
     try {
         let teacher = await Teacher.findById(req.params.teacher_id);
@@ -127,31 +130,26 @@ router.put('/:teacher_id', [
         if (email) teacher.email = email;
         teacher.dateModified = new Date();
 
-        let classroom;
-        let location;
-
-        if (class_id) {
-            classroom = await Class.findOne({ _id: class_id });
+        // Update class if provided
+        if (classObj) {
+            const classroom = await Class.findOne({ _id: classObj._id });
             if (!classroom) return res.status(400).json({ errors: [{ msg: 'Classroom not found' }] });
+            teacher.class = classroom;
         }
 
-        if (location_id) {
-            location = await Location.findOne({ _id: location_id });
+        // Update location if provided
+        if (locationObj) {
+            const location = await Location.findOne({ _id: locationObj._id });
             if (!location) return res.status(400).json({ errors: [{ msg: 'Location not found' }] });
+            teacher.location = location;
         }
-
-        // If a valid class was found, associate the student with the class.
-        if (classroom) teacher.class = classroom;
-
-        // If a valid location was found, associate the student with the location.
-        if (location) teacher.location = location;
 
         await teacher.save();
         res.send('Teacher updated successfully');
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 })
 
@@ -186,7 +184,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -206,7 +204,7 @@ router.get('/:teacher_id', auth, async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send(error.message);
     }
 });
 
@@ -220,7 +218,7 @@ router.delete('/:teacher_id', auth, async (req: Request, res: Response) => {
         res.json({ msg: 'Teacher deleted' });
     } catch (error: any) {
         console.error(error.message);
-        res.status(500).send('Server error');
+        res.status(500).send(error.message);
     }
 });
 
