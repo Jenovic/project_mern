@@ -41,8 +41,6 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
         [classOptions]
     );
 
-    console.log(memoizedClassOptions);
-
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const year = date.getFullYear();

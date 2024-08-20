@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Location {
+    _id?: number;
     name: string;
     address?: string;
     city?: string;

@@ -4,6 +4,7 @@ import type { RootState } from '../../store';
 
 const LeftMenu = () => {
     const { user } = useSelector((state: RootState) => state.auth);
+    const { locations } = useSelector((state: RootState) => state.locations);
 
     return (
         <div className='shadow'>
@@ -22,9 +23,9 @@ const LeftMenu = () => {
                     <div className='mt-3'>
                         <label className='font-medium'>Locations: </label>
                         <select className='group rounded w-full h-9 px-2'>
-                            <option>Choose location</option>
-                            <option>Bel-air</option>
-                            <option>Kasapa</option>
+                            {locations.map((location) => {
+                                return <option key={location.name} value={location.name}>{location.name}</option>
+                            })}
                         </select>
                     </div>
                 </div>

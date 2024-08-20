@@ -45,8 +45,6 @@ const EntityList: React.FC<EntityListProps> = ({
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
 
-    console.log(entities);
-
     useEffect(() => {
         const loadEntityList = async () => {
             try {
