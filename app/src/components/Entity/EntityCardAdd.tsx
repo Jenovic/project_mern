@@ -5,6 +5,7 @@ import { setShowAddModal, setAddDisabled, setAddResponsableDisabled } from '../.
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
 import { Field, FormData, Responsable } from '../../utils/interfaces';
+import { genderOptions, relationshipOptions } from '../../utils/helpers';
 import NotificationModal from '../Modal/NotificationModal';
 import FormField from '../Form/FormField';
 import ResponsableTabs from '../Student/ResponsableTabs';
@@ -214,7 +215,12 @@ const EntityCardAdd: React.FC<EntityCardAddProps> = ({
                                                 field={field}
                                                 value={formData[field.name as keyof FormData] as string}
                                                 onChange={handleChange}
-                                                options={field.name === 'location' ? memoizedLocationOptions : field.name === 'class' ? memoizedClassOptions : undefined}
+                                                options={
+                                                    field.name === 'location' ?
+                                                        memoizedLocationOptions : field.name === 'class' ?
+                                                            memoizedClassOptions : field.name === 'gender' ?
+                                                                genderOptions : field.name === 'relationshipToStudent' ?
+                                                                    relationshipOptions : undefined}
                                             />
                                         ))}
                                     </div>

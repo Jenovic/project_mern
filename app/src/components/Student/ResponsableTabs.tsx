@@ -1,5 +1,6 @@
 import FormField from "../Form/FormField";
 import { Responsable, Field } from "../../utils/interfaces";
+import { relationshipOptions } from "../../utils/helpers";
 
 interface ResponsableProps {
     responsables: Responsable[];
@@ -53,6 +54,7 @@ const ResponsableTabs: React.FC<ResponsableProps> = ({
                                     field={field}
                                     value={responsables[activeTab][field.name as keyof Responsable]}
                                     onChange={handleResponsableChange}
+                                    options={field.name === 'relationshipToStudent' ? relationshipOptions : undefined}
                                 />
                             ))}
                         </>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Field, FormData, Responsable } from '../../utils/interfaces';
+import { genderOptions, relationshipOptions } from '../../utils/helpers';
 import { setAddResponsableDisabled } from '../../slices/globalSlice';
 import { RootState } from '../../store';
 import { setAlert } from '../../slices/alertSlice';
@@ -76,7 +77,13 @@ const ResponsableModal: React.FC<ResponsableModalProps> = ({ show, fields, onClo
                                 <div className="py-5">
 
                                     {filteredFields.map((field) => (
-                                        <FormField key={field.name} field={field} value={formData[field.name as keyof FormData] as string} onChange={handleChange} />
+                                        <FormField
+                                            key={field.name}
+                                            field={field}
+                                            value={formData[field.name as keyof FormData] as string}
+                                            onChange={handleChange}
+                                            options={field.name === 'relationshipToStudent' ? relationshipOptions : undefined}
+                                        />
                                     ))}
                                 </div>
                                 <div>
