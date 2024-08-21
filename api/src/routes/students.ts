@@ -1,7 +1,5 @@
 import express, { Request, Response } from "express";
-import mongoose from 'mongoose';
-import { IGetUserAuthInfoRequest } from "../types/express";
-import { body, validationResult, check } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { isValidObjectId } from "../utils/helpers";
 import Student from "../models/Student";
 import Class from "../models/Class";
@@ -196,16 +194,31 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const { class: classId, location: locationId } = req.query;
 
     try {
-        const students = await Student.find()
+        // Create a query object to store filtering conditions
+        const query: any = {};
+
+        // If classId is provided, add class filter
+        if (typeof classId === 'string' && isValidObjectId(classId)) {
+            query.class = classId; // Only assign if classId is a valid ObjectId
+        }
+
+        // If locationId is provided, add location filter
+        if (typeof locationId === 'string' && isValidObjectId(locationId)) {
+            query.location = locationId;
+        }
+
+        // Fetch filtered students, paginated
+        const students = await Student.find(query)
             .sort({ surname: 1 })
             .limit(limit).skip(skip)
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
 
-        const total = await Student.countDocuments();
+        const total = await Student.countDocuments(query);
 
         if (!students || students.length === 0) return res.status(404).json({ errors: [{ msg: 'No Students found' }] });
 

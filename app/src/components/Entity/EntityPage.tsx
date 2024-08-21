@@ -89,14 +89,13 @@ const EntityPage: React.FC<EntityPageProps> = ({
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span>Filters:</span>
                         <select
                             id="locations"
                             name="locations"
                             onChange={() => { }}
                             className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
-                            <option value="">Select location ...</option>
+                            <option value="">Location ...</option>
                             {locations?.map(option => (
                                 <option key={option.name} value={option._id}>
                                     {option.name}
@@ -109,13 +108,14 @@ const EntityPage: React.FC<EntityPageProps> = ({
                             onChange={() => { }}
                             className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
-                            <option value="">Select classroom ...</option>
+                            <option value="">Classroom ...</option>
                             {classrooms?.map(option => (
                                 <option key={option.name} value={option._id}>
                                     {option.name}
                                 </option>
                             ))}
                         </select>
+                        <button className="text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">Filter</button>
                     </div>
                 </div>
                 <EntityListComponent showFull={true} />
