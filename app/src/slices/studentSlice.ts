@@ -46,38 +46,17 @@ const studentSlice = createSlice({
     initialState,
     reducers: {
         loadStudents: (state, action: PayloadAction<Student[]>) => {
-            return {
-                ...state,
-                students: action.payload,
-                loading: false,
-            }
+            state.students = action.payload;
+            state.loading = false;
         },
         addStudent: (state, action: PayloadAction<Student>) => {
-            return {
-                ...state,
-                students: [...state.students, action.payload],
-                loading: false,
-            }
+            state.students = [...state.students, action.payload];
+            state.loading = false;
         },
-        updateStudent: (state, action: PayloadAction<Student>) => {
-            return {
-                ...state,
-                loading: false,
-            }
-        },
+        updateStudent: (state, action: PayloadAction<Student>) => { state.loading = false; },
         deleteStudent: (state, action: PayloadAction<Student>) => { },
-        setFields: (state, action: PayloadAction<[]>) => {
-            return {
-                ...state,
-                fields: action.payload,
-            }
-        },
-        setResponsibleFields: (state, action: PayloadAction<[]>) => {
-            return {
-                ...state,
-                responsibleFields: action.payload,
-            }
-        },
+        setFields: (state, action: PayloadAction<[]>) => { state.fields = action.payload; },
+        setResponsibleFields: (state, action: PayloadAction<[]>) => { state.responsibleFields = action.payload; },
         setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
         setSelectedStudent: (state, action: PayloadAction<any>) => { state.selectedStudent = action.payload },
