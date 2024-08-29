@@ -17,7 +17,7 @@ const Dashboard = () => {
             {loading ? (
                 <Loader />
             ) : (
-                <div className='mx-auto max-w-8xl overflow-hidden px-5'>
+                <div className='mx-auto max-w-8xl px-5 overflow-hidden lg:overflow-visible'>
                     <div className='grid lg:grid-cols-12 gap-6 my-20'>
                         <div className='hidden lg:block lg:col-span-3'><LeftMenu /></div>
                         <div className='lg:col-span-9 gap-5'>
