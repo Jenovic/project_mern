@@ -160,16 +160,27 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const { class: classId, location: locationId } = req.query;
 
     try {
-        const teachers = await Teacher.find()
+        const query: any = {};
+
+        if (typeof classId === 'string' && isValidObjectId(classId)) {
+            query.class = classId;
+        }
+
+        if (typeof locationId === 'string' && isValidObjectId(locationId)) {
+            query.location = locationId;
+        }
+
+        const teachers = await Teacher.find(query)
             .sort({ surname: 1 })
             .limit(limit).skip(skip)
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
 
-        const total = await Teacher.countDocuments();
+        const total = await Teacher.countDocuments(query);
 
         if (!teachers || teachers.length === 0) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
 

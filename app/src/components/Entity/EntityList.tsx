@@ -11,7 +11,12 @@ import Loader from '../Loader';
 
 interface EntityListProps {
     entityName: string;
-    fetchSvc: (page: number) => Promise<any>;
+    fetchSvc: (
+        page: number,
+        limit: number,
+        locationFilter: string,
+        classroomFilter: string
+    ) => Promise<any>;
     loadEntities: (entities: any[]) => any;
     setEntityFields: (fields: []) => any;
     setEntitySubFields: (fields: []) => any;
@@ -41,6 +46,7 @@ const EntityList: React.FC<EntityListProps> = ({
     const dispatch = useDispatch();
     const entities = useSelector(entitiesSelector);
     const loading = useSelector(loadingSelector);
+    const { locationFilter, classroomFilter } = useSelector((state: RootState) => state.global);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
@@ -48,7 +54,7 @@ const EntityList: React.FC<EntityListProps> = ({
     useEffect(() => {
         const loadEntityList = async () => {
             try {
-                const res = await fetchSvc(page);
+                const res = await fetchSvc(locationFilter || classroomFilter ? 1 : page, 10, locationFilter, classroomFilter);
                 loadEntities(res.data[`${entityName.toLowerCase()}s`]);
                 setEntityFields(res.data.fieldTypes);
 
@@ -60,8 +66,14 @@ const EntityList: React.FC<EntityListProps> = ({
                 }
                 setTotalPages(res.data.pages);
             } catch (error: any) {
-                const message = error.msg;
-                dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+                const { errors } = error.response.data;
+                if (Array.isArray(errors)) {
+                    errors.map((err) => {
+                        dispatch(setAlert({ id: uuidv4(), message: err.msg, type: 'error' }));
+                    });
+                } else {
+                    dispatch(setAlert({ id: uuidv4(), message: error.msg, type: 'error' }));
+                }
             } finally {
                 setLoading(false);
                 setRowIndex(0);

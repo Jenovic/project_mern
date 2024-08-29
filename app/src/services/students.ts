@@ -1,13 +1,15 @@
 import axios from 'axios';
 
-export const getStudentsSvc = async (page = 1, limit = 10) => {
+export const getStudentsSvc = async (page = 1, limit = 10, filterLocation = '', filterClassroom = '') => {
     const config = {
         headers: {
             'x-auth-token': localStorage.token
         },
         params: {
             page,
-            limit
+            limit,
+            class: filterClassroom,
+            location: filterLocation
         }
     };
 

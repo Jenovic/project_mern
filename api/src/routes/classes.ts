@@ -115,15 +115,22 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const { location: locationId } = req.query;
 
     try {
-        const classrooms = await Class.find()
+        const query: any = {};
+
+        if (typeof locationId === 'string' && isValidObjectId(locationId)) {
+            query.location = locationId;
+        }
+
+        const classrooms = await Class.find(query)
             .sort({ name: 1 })
             .limit(limit).skip(skip)
             .populate('location', 'name')
             .exec();
 
-        const total = await Class.countDocuments();
+        const total = await Class.countDocuments(query);
 
         if (!classrooms) return res.status(404).json({ errors: [{ msg: 'No classrooms found' }] });
 

@@ -26,24 +26,24 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  const initialLoad = async () => {
-    if (localStorage.token) {
-      try {
-        const user = await loadUserSvc();
-        const locations = await getLocationsSvc();
+  useEffect(() => {
+    const initialLoad = async () => {
+      if (localStorage.token) {
+        try {
+          const user = await loadUserSvc();
+          const locations = await getLocationsSvc();
 
-        dispatch(loadUser(user.data));
-        dispatch(loadLocations(locations.data));
+          dispatch(loadUser(user.data));
+          dispatch(loadLocations(locations.data));
 
-      } catch (error: any) {
-        console.log(error);
-        const message = error.message;
-        dispatch(setAlert({ id: uuidv4(), message: 'Your session expired, please log in.', type: 'error' }));
+        } catch (error: any) {
+          console.log(error);
+          const message = error.message;
+          dispatch(setAlert({ id: uuidv4(), message: 'Your session expired, please log in.', type: 'error' }));
+        }
       }
     }
-  }
 
-  useEffect(() => {
     initialLoad();
   }, []);
 

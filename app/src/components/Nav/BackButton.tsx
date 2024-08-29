@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { setLocationFilter, setClassroomFilter } from '../../slices/globalSlice';
 
 interface BackButtonProps {
     setLoading: (loading: boolean) => any;
@@ -11,6 +12,8 @@ const BackButton: React.FC<BackButtonProps> = ({ setLoading }) => {
 
     const handleClick = () => {
         navigate('/dashboard');
+        dispatch(setLocationFilter(''));
+        dispatch(setClassroomFilter(''));
         dispatch(setLoading(true));
     }
     return (

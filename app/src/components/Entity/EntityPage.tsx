@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowEditModal, setShowAddModal } from "../../slices/globalSlice";
+import { setShowEditModal, setShowAddModal, setLocationFilter, setClassroomFilter } from "../../slices/globalSlice";
 import { setAlert } from "../../slices/alertSlice";
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from "../../store";
@@ -30,6 +30,8 @@ const EntityPage: React.FC<EntityPageProps> = ({
 }) => {
     const dispatch = useDispatch();
     const [showNotifModal, setShowNotifModal] = useState(false);
+    const [filterLocation, setFilterLocation] = useState('');
+    const [filterClassroom, setFilterClassroom] = useState('');
     const { classrooms } = useSelector((state: RootState) => state.classrooms);
     const { locations } = useSelector((state: RootState) => state.locations);
 
@@ -62,6 +64,28 @@ const EntityPage: React.FC<EntityPageProps> = ({
         setShowNotifModal(false);
     };
 
+    const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterLocation(e.target.value);
+        dispatch(setLocationFilter(e.target.value));
+    }
+
+    const handleClassroomChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterClassroom(e.target.value);
+        dispatch(setClassroomFilter(e.target.value));
+    }
+
+    const handleFilterEntity = () => {
+        dispatch(setLoading(true));
+    }
+
+    const clearFilter = () => {
+        setFilterLocation('');
+        setFilterClassroom('');
+        dispatch(setLocationFilter(''));
+        dispatch(setClassroomFilter(''));
+        dispatch(setLoading(true));
+    }
+
     const handleSubmit = async () => {
         try {
             await deleteSvc(selectedEntity._id);
@@ -89,10 +113,12 @@ const EntityPage: React.FC<EntityPageProps> = ({
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
+                        {(filterClassroom || filterLocation) && <span className="w-1/2 underline text-sm cursor-pointer" onClick={clearFilter}>clear filter</span>}
                         <select
                             id="locations"
                             name="locations"
-                            onChange={() => { }}
+                            value={filterLocation || ''}
+                            onChange={handleLocationChange}
                             className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
                             <option value="">Location ...</option>
@@ -102,20 +128,23 @@ const EntityPage: React.FC<EntityPageProps> = ({
                                 </option>
                             ))}
                         </select>
-                        <select
-                            id="classrooms"
-                            name="classrooms"
-                            onChange={() => { }}
-                            className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        >
-                            <option value="">Classroom ...</option>
-                            {classrooms?.map(option => (
-                                <option key={option.name} value={option._id}>
-                                    {option.name}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">Filter</button>
+                        {entityName !== 'Classroom' &&
+                            <select
+                                id="classrooms"
+                                name="classrooms"
+                                value={filterClassroom || ''}
+                                onChange={handleClassroomChange}
+                                className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                                <option value="">Classroom ...</option>
+                                {classrooms?.map(option => (
+                                    <option key={option.name} value={option._id}>
+                                        {option.name}
+                                    </option>
+                                ))}
+                            </select>
+                        }
+                        <button onClick={() => handleFilterEntity()} className="text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">Filter</button>
                     </div>
                 </div>
                 <EntityListComponent showFull={true} />

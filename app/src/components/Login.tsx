@@ -6,6 +6,8 @@ import type { RootState } from '../store';
 import { loginSuccess, loginError, loadUser } from '../slices/authSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { loginSvc, loadUserSvc } from '../services/auth';
+import { getLocationsSvc } from '../services/locations';
+import { loadLocations } from '../slices/locationSlice';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -35,6 +37,8 @@ const Login = () => {
             dispatch(loginSuccess({ token: res.data.token }));
             const user = await loadUserSvc();
             dispatch(loadUser(user.data));
+            const locations = await getLocationsSvc();
+            dispatch(loadLocations(locations.data));
         } catch (error: any) {
             dispatch(loginError());
             const errors = error.response.data.errors;
