@@ -119,7 +119,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                             name="locations"
                             value={filterLocation || ''}
                             onChange={handleLocationChange}
-                            className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         >
                             <option value="">Location ...</option>
                             {locations?.map(option => (
@@ -134,7 +134,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                                 name="classrooms"
                                 value={filterClassroom || ''}
                                 onChange={handleClassroomChange}
-                                className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             >
                                 <option value="">Classroom ...</option>
                                 {classrooms?.map(option => (

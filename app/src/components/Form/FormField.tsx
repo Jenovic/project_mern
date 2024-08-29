@@ -50,7 +50,7 @@ const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, options }
                     value={fieldValue || ' '}
                     onChange={handleSelectChange}
                     required={field.required}
-                    className="col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="col-span-9 shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight border-r-8 border-transparent focus:outline-none focus:shadow-outline"
                 >
                     <option value="">Please select ...</option>
                     {options?.map(option => (
@@ -68,7 +68,7 @@ const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, options }
                     onChange={handleInputChange}
                     required={field.required}
                     readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'}
-                    className={`col-span-9 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'
+                    className={`col-span-9 shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'
                         ? 'bg-gray-200 cursor-not-allowed'
                         : ''
                         }`}
