@@ -46,7 +46,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
             }
             loadClasses();
         }
-    }, []);
+    }, [entities]);
 
     const handleEdit = () => {
         dispatch(setShowEditModal(true));
