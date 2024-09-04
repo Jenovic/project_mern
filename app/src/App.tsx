@@ -10,6 +10,7 @@ import PrivateRoute from './utils/PrivateRoute';
 import Navbar from './components/Nav/Navbar';
 import SplashScreen from './components/SplashScreen';
 import Login from './components/Login';
+import Register from './components/Register';
 import Alert from './components/Alert';
 import Dashboard from './components/Dashboard/Dashboard';
 import Students from './components/Student/Students';
@@ -55,6 +56,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<SplashScreen />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/setPassword" element={<Register />} />
           <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
           <Route path="/students" element={<PrivateRoute element={<Students />} />} />
           <Route path="/teachers" element={<PrivateRoute element={<Teachers />} />} />

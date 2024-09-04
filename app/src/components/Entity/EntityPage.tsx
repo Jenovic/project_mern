@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowEditModal, setShowAddModal, setLocationFilter, setClassroomFilter } from "../../slices/globalSlice";
 import { setAlert } from "../../slices/alertSlice";
@@ -47,6 +47,11 @@ const EntityPage: React.FC<EntityPageProps> = ({
             loadClasses();
         }
     }, [entities]);
+
+    const memoizedClassrooms = useMemo(
+        () => { return classrooms; },
+        [classrooms, entities]
+    );
 
     const handleEdit = () => {
         dispatch(setShowEditModal(true));
@@ -137,7 +142,7 @@ const EntityPage: React.FC<EntityPageProps> = ({
                                 className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             >
                                 <option value="">Classroom ...</option>
-                                {classrooms?.map(option => (
+                                {memoizedClassrooms?.map(option => (
                                     <option key={option.name} value={option._id}>
                                         {option.name}
                                     </option>
