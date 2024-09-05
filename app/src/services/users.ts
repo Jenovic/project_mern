@@ -17,7 +17,7 @@ export const registerUserSvc = async (userData: {}) => {
     }
 }
 
-export const updateUserSvc = async (userId: number, userData: {}) => {
+export const updateUserSvc = async (userId: string, userData: {}) => {
     const config = {
         headers: {
             'Content-Type': 'application/json'
@@ -29,6 +29,16 @@ export const updateUserSvc = async (userId: number, userData: {}) => {
         return res;
     } catch (error) {
         console.error('Error updating user:', error);
+        throw error;
+    }
+}
+
+export const getUserSvc = async (userId: string) => {
+    try {
+        const res = await axios.get(`api/users/${userId}`);
+        return res;
+    } catch (error) {
+        console.error('Error fetching user:', error);
         throw error;
     }
 }

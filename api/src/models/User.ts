@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema({
     regLink: {
         type: String,
     },
+    registered: {
+        type: Boolean,
+        default: false,
+    },
     dateCreated: {
         type: Date,
         default: Date.now
@@ -48,6 +52,7 @@ export interface IUser extends Document {
     avartar?: string;
     role?: UserRole;
     regLink?: string;
+    registered?: boolean;
     dateCreated: Date;
     dateModified: Date;
 }

@@ -79,6 +79,7 @@ router.put('/:user_id', [
         if (password) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
+            user.registered = true;
         }
 
         await user.save();
@@ -126,8 +127,8 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
 // @route GET api/users/:user_id
 // @desc  get user by ID
-// @access Private
-router.get('/:user_id', auth, async (req: Request, res: Response) => {
+// @access Public
+router.get('/:user_id', async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.params.user_id);
 
