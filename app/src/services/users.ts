@@ -17,7 +17,7 @@ export const registerUserSvc = async (userData: {}) => {
     }
 }
 
-export const updateUserSvc = async (userId: string, userData: {}) => {
+export const updateUserSvc = async (userId: any, userData: {}) => {
     const config = {
         headers: {
             'Content-Type': 'application/json'
@@ -39,6 +39,42 @@ export const getUserSvc = async (userId: string) => {
         return res;
     } catch (error) {
         console.error('Error fetching user:', error);
+        throw error;
+    }
+}
+
+export const getUsersSvc = async (page = 1, limit = 10) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token
+        },
+        params: {
+            page,
+            limit,
+        }
+    };
+
+    try {
+        const res = await axios.get('api/users', config);
+        return res;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+    }
+}
+
+export const deleteUserSvc = async (userId: number) => {
+    const config = {
+        headers: {
+            'x-auth-token': localStorage.token,
+        },
+    };
+
+    try {
+        const res = await axios.delete(`api/users/${userId}`, config);
+        return res;
+    } catch (error) {
+        console.error('Error deleting user:', error);
         throw error;
     }
 }

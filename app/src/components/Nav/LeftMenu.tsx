@@ -14,9 +14,13 @@ const LeftMenu = () => {
             <div className='px-5 py-8 flex flex-col gap-4 bg-gray-300 prose prose-a:m-0 prose-a:shadow prose-a:px-3 prose-a:py-2 prose-a:bg-sky-700
              prose-a:text-white hover:prose-a:bg-sky-100 hover:prose-a:text-black prose-a:rounded-md prose-a:no-underline prose-a:cursor-pointer
               prose-a:font-semibold'>
-                <Link to='/students'>Students</Link>
-                <Link to='/teachers'>Teachers</Link>
-                <Link to='/classrooms'>Classrooms</Link>
+                <Link to='/students'><span className="text-white"><i className='fa-solid fa-users'></i></span> Students</Link>
+                <Link to='/teachers'><span className="text-white"><i className='fa-solid fa-user'></i></span> Teachers</Link>
+                <Link to='/classrooms'><span className="text-white"><i className='fa-solid fa-school'></i></span> Classrooms</Link>
+                <div>
+                    <h4 className='pb-2'>Admin center <span className="text-black"><i className='fa-solid fa-cog'></i></span></h4>
+                    <Link to='/users'><span className="text-white"><i className='fa-solid fa-users'></i></span> User Management</Link>
+                </div>
             </div>
         </div>
     )

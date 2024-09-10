@@ -34,7 +34,7 @@ const TeacherCard = () => {
         />
       )}
     </>
-  )
+  );
 }
 
 export default TeacherCard;

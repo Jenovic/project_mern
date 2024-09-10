@@ -117,40 +117,42 @@ const EntityPage: React.FC<EntityPageProps> = ({
                             <p className='hover:bg-sky-200 hover:shadow' title="Add a new record" onClick={handleAdd}>Add <i className="fa-solid fa-plus"></i></p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        {(filterClassroom || filterLocation) && <span className="w-1/2 underline text-sm cursor-pointer" onClick={clearFilter}>clear filter</span>}
-                        <select
-                            id="locations"
-                            name="locations"
-                            value={filterLocation || ''}
-                            onChange={handleLocationChange}
-                            className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        >
-                            <option value="">Location ...</option>
-                            {locations?.map(option => (
-                                <option key={option.name} value={option._id}>
-                                    {option.name}
-                                </option>
-                            ))}
-                        </select>
-                        {entityName !== 'Classroom' &&
+                    {entityName !== 'User' &&
+                        <div className="flex items-center gap-3">
+                            {(filterClassroom || filterLocation) && <span className="w-1/2 underline text-sm cursor-pointer" onClick={clearFilter}>clear filter</span>}
                             <select
-                                id="classrooms"
-                                name="classrooms"
-                                value={filterClassroom || ''}
-                                onChange={handleClassroomChange}
+                                id="locations"
+                                name="locations"
+                                value={filterLocation || ''}
+                                onChange={handleLocationChange}
                                 className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             >
-                                <option value="">Classroom ...</option>
-                                {memoizedClassrooms?.map(option => (
+                                <option value="">Location ...</option>
+                                {locations?.map(option => (
                                     <option key={option.name} value={option._id}>
                                         {option.name}
                                     </option>
                                 ))}
                             </select>
-                        }
-                        <button onClick={() => handleFilterEntity()} className="text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">Filter</button>
-                    </div>
+                            {entityName !== 'Classroom' &&
+                                <select
+                                    id="classrooms"
+                                    name="classrooms"
+                                    value={filterClassroom || ''}
+                                    onChange={handleClassroomChange}
+                                    className="col-span-9 shadow border border-r-8 border-transparent rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                >
+                                    <option value="">Classroom ...</option>
+                                    {memoizedClassrooms?.map(option => (
+                                        <option key={option.name} value={option._id}>
+                                            {option.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            }
+                            <button onClick={() => handleFilterEntity()} className="text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500">Filter</button>
+                        </div>
+                    }
                 </div>
                 <EntityListComponent showFull={true} />
             </div>

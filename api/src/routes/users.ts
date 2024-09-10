@@ -10,6 +10,22 @@ const config = require('config');
 
 const router = express.Router();
 
+interface FieldType {
+    name: string;
+    type: string;
+    required: boolean;
+}
+
+const getFieldTypes = (): FieldType[] => {
+    const schema = User.schema.paths;
+    const fieldTypes: FieldType[] = Object.keys(schema).map((field) => ({
+        name: field,
+        type: schema[field].instance,
+        required: !!schema[field].isRequired,
+    }));
+    return fieldTypes;
+};
+
 // @route POST api/users
 // @desc  Register user
 // @access Public
@@ -113,12 +129,29 @@ router.put('/:user_id', [
 // @desc get all users
 // @access Private
 router.get('/', auth, async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
     try {
-        const users = await User.find()
-            .sort({ name: 1 });
+        const query: any = {};
+        const users = await User.find(query)
+            .sort({ name: 1 })
+            .limit(limit).skip(skip);
+
+        const total = await User.countDocuments(query);
+
         if (!users || users.length === 0) return res.status(404).json({ errors: [{ msg: 'No Users found' }] });
 
-        res.status(200).json(users);
+        const fieldTypes = getFieldTypes();
+
+        res.status(200).json({
+            users,
+            total,
+            page,
+            pages: Math.ceil(total / limit),
+            fieldTypes
+        });
     } catch (error: any) {
         console.error(error.message);
         res.status(500).send(error.message);
