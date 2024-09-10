@@ -47,6 +47,7 @@ const EntityList: React.FC<EntityListProps> = ({
     const entities = useSelector(entitiesSelector);
     const loading = useSelector(loadingSelector);
     const { locationFilter, classroomFilter } = useSelector((state: RootState) => state.global);
+    const { user } = useSelector((state: RootState) => state.auth);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [rowIndex, setRowIndex] = useState(0);
