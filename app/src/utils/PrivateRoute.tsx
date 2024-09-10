@@ -8,10 +8,11 @@ import Loader from '../components/Loader';
 
 interface PrivateRouteProps {
   element: JSX.Element;
+  requiredRole?: string;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
-  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredRole }) => {
+  const { isAuthenticated, loading, user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,6 +41,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />; // Redirect to login if not authenticated
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
+    return <Navigate to="/dashboard" />; // or redirect to a "Not authorized" page
   }
 
   return element;

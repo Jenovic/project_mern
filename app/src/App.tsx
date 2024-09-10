@@ -63,7 +63,7 @@ const App = () => {
           <Route path="/students" element={<PrivateRoute element={<Students />} />} />
           <Route path="/teachers" element={<PrivateRoute element={<Teachers />} />} />
           <Route path="/classrooms" element={<PrivateRoute element={<Classrooms />} />} />
-          <Route path="/users" element={<PrivateRoute element={<Users />} />} />
+          <Route path="/users" element={<PrivateRoute element={<Users />} requiredRole="superadmin" />} />
         </Routes>
       </>
     </Router>
