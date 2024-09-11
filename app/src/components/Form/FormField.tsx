@@ -67,10 +67,11 @@ const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, options }
                     value={fieldValue || ''}
                     onChange={handleInputChange}
                     required={field.required}
-                    readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'}
-                    className={`col-span-9 shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified'
-                        ? 'bg-gray-200 cursor-not-allowed'
-                        : ''
+                    readOnly={field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified' || field.name === 'status'}
+                    className={`col-span-9 shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline 
+                        ${field.name === '_id' || field.name === 'dateCreated' || field.name === 'dateModified' || field.name === 'status'
+                            ? 'bg-gray-200 cursor-not-allowed'
+                            : ''
                         }`}
                 />
             )}

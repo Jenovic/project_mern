@@ -55,7 +55,11 @@ const EntityPage: React.FC<EntityPageProps> = ({
     );
 
     const handleEdit = () => {
-        dispatch(setShowEditModal(true));
+        if (selectedEntity?.status === 'approved') {
+            dispatch(setShowEditModal(true));
+        } else {
+            dispatch(setAlert({ id: uuidv4(), message: `${entityName} pending approval...`, type: 'warning' }));
+        }
     };
 
     const handleDelete = () => {

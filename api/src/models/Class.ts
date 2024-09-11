@@ -5,6 +5,7 @@ import { ILocation } from './Location';
 const ClassSchema = new Schema({
     name: { type: String, required: true, index: true },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'location' },
+    status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },
 });
@@ -12,6 +13,7 @@ const ClassSchema = new Schema({
 export interface IClass extends Document {
     name: string;
     location?: ILocation;
+    status: string;
     dateCreated: Date;
     dateModified: Date;
 }

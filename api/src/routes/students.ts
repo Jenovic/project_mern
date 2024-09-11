@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
+import { IGetUserAuthInfoRequest } from "../types/express";
 import { body, validationResult } from "express-validator";
 import { isValidObjectId } from "../utils/helpers";
 import Student from "../models/Student";
 import Class from "../models/Class";
 import Location from "../models/Location";
+import User from "../models/User";
 import auth from "../middleware/auth";
 
 const router = express.Router();
@@ -78,7 +80,7 @@ router.post('/', [
             return true;
         }),
     validateResponsable,
-], auth, async (req: Request, res: Response) => {
+], auth, async (req: IGetUserAuthInfoRequest, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -88,11 +90,15 @@ router.post('/', [
     const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class: classObj, location: locationObj } = req.body;
 
     try {
+        const user = await User.findById(req.user.id).select('-password');
+
         let student = await Student.findOne({ name, surname, dob });
 
         if (student) return res.status(400).json({ errors: [{ msg: 'Student already exists' }] });
 
         student = new Student({ gender, name, middleName, surname, dob, address, phoneNumber, responsables });
+
+        if (user?.role !== 'staff') student.status = 'approved';
 
         // Update class if provided
         if (classObj) {
@@ -146,7 +152,7 @@ router.put('/:student_id', [
     validateResponsable,
 ],
     auth, async (req: Request, res: Response) => {
-        const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class: classObj, location: locationObj } = req.body;
+        const { gender, name, middleName, surname, dob, address, phoneNumber, responsables, class: classObj, location: locationObj, status } = req.body;
 
         try {
             // Find the existing student by ID
@@ -162,6 +168,7 @@ router.put('/:student_id', [
             if (address) student.address = address;
             if (phoneNumber) student.phoneNumber = phoneNumber;
             if (responsables) student.responsables = responsables;
+            if (status) student.status = status;
             student.dateModified = new Date();
 
             // Update class if provided

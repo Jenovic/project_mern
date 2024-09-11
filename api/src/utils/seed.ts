@@ -44,6 +44,7 @@ const generateMockStudent = (): IStudent => {
         ],
         class: faker.database.mongodbObjectId(), // Mock class ObjectId
         location: faker.database.mongodbObjectId(), // Mock location ObjectId
+        status: 'approved',
         dateCreated: faker.date.recent(),
         dateModified: faker.date.recent(),
     });
@@ -62,6 +63,7 @@ const generateMockTeacher = (): ITeacher => {
         email: faker.internet.email(),
         class: faker.database.mongodbObjectId(), // Mock class ObjectId
         location: faker.database.mongodbObjectId(), // Mock location ObjectId
+        status: 'approved',
         dateCreated: faker.date.recent(),
         dateModified: faker.date.recent(),
     });

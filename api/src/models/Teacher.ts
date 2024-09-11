@@ -14,6 +14,7 @@ const TeacherSchema = new Schema({
     email: String,
     class: { type: mongoose.Schema.Types.ObjectId, ref: 'class' },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'location' },
+    status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },
 });
@@ -29,6 +30,7 @@ export interface ITeacher extends Document {
     email?: string;
     class?: IClass;
     location?: ILocation;
+    status: string;
     dateCreated: Date;
     dateModified: Date;
 }
