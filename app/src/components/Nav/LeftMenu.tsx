@@ -24,6 +24,7 @@ const LeftMenu = () => {
                         <div className='flex gap-3 flex-col'>
                             <Link to='/users'><span className="text-white"><i className='fa-solid fa-users'></i></span> User Management</Link>
                             <Link to='/locations'><span className="text-white"><i className='fa-solid fa-map'></i></span> Locations</Link>
+                            <Link to='/settings'><span className="text-white"><i className='fa-solid fa-list'></i></span> Settings</Link>
                         </div>
                     </div>
                 }
