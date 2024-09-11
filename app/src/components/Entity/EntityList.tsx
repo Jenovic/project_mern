@@ -4,7 +4,7 @@ import { setAlert } from '../../slices/alertSlice';
 import { setShowEditModal } from '../../slices/globalSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '../../store';
-import { Field } from '../../utils/interfaces';
+import { Field, FormData } from '../../utils/interfaces';
 import { format } from 'date-fns';
 import Pagination from '../Pagination/Pagination';
 import Loader from '../Loader';
@@ -17,7 +17,10 @@ interface EntityListProps {
         locationFilter: string,
         classroomFilter: string
     ) => Promise<any>;
+    updateSvc: (id: number, formData: FormData) => Promise<any>;
     loadEntities: (entities: any[]) => any;
+    updateEntity: (entity: any) => any;
+    deleteSvc: (id: number) => Promise<any>;
     setEntityFields: (fields: []) => any;
     setEntitySubFields: (fields: []) => any;
     setLoading: (loading: boolean) => any;
@@ -32,7 +35,10 @@ interface EntityListProps {
 const EntityList: React.FC<EntityListProps> = ({
     entityName,
     fetchSvc,
+    updateSvc,
     loadEntities,
+    updateEntity,
+    deleteSvc,
     setEntityFields,
     setEntitySubFields,
     setLoading,
@@ -93,6 +99,31 @@ const EntityList: React.FC<EntityListProps> = ({
         dispatch(setShowEditModal(true));
     };
 
+    const handleApprove = async (entity: any) => {
+        try {
+            const response = await updateSvc(entity._id, { status: 'approved' });
+            dispatch(setAlert({ id: uuidv4(), message: `${entityName} updated successfully`, type: 'success' }));
+            dispatch(updateEntity(response.data));
+            dispatch(setShowEditModal(false));
+        } catch (error: any) {
+            dispatch(setAlert({ id: uuidv4(), message: error.message, type: 'error' }));
+        } finally {
+            dispatch(setLoading(true));
+        }
+    }
+
+    const handleReject = async (entity: any) => {
+        try {
+            await deleteSvc(entity._id);
+            dispatch(setAlert({ id: uuidv4(), message: `${entityName} deleted successfully`, type: 'success' }));
+        } catch (error: any) {
+            const message = error.msg;
+            dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+        } finally {
+            dispatch(setLoading(true));
+        }
+    }
+
     const displayedEntities = showFull ? entities : entities.slice(0, 5);
 
     return (
@@ -110,12 +141,13 @@ const EntityList: React.FC<EntityListProps> = ({
                                     {columns.map((column) => (
                                         <th key={column.accessor} scope="col" className="px-3 py-3">{column.label}</th>
                                     ))}
+                                    {user?.role !== 'staff' && <th scope="col" className="px-3 py-3">Actions</th>}
                                 </tr>
                             </thead>
                             <tbody className={`[&>*:nth-child(${rowIndex + 1})]:bg-sky-100`}>
                                 {displayedEntities.map((entity, idx) => (
-                                    <tr key={entity.id || idx} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow" onClick={() => handleRowSelect(idx, entity)}>
-                                        <td className="px-3">
+                                    <tr key={entity.id || idx} className={`${entity.status === 'pending' ? 'cursor-not-allowed' : ''} bg-white border-b dark:bg-gray-800 dark:border-gray-700 table-shadow`} onClick={() => handleRowSelect(idx, entity)}>
+                                        <td className={`px-3 ${entity.status === 'pending' ? 'text-gray-400' : ''}`}>
                                             <span className='flex items-center relative'>
                                                 <span className='pr-2'>{(page - 1) * 10 + idx + 1}</span>
                                                 {entity.status === 'pending' && user?.role === 'staff' ? (
@@ -136,7 +168,7 @@ const EntityList: React.FC<EntityListProps> = ({
                                             </span>
                                         </td>
                                         {columns.map((column) => (
-                                            <td key={`${entity.id}-${column.accessor}`} className="px-3">
+                                            <td key={`${entity.id}-${column.accessor}`} className={`px-3 ${entity.status === 'pending' ? 'text-gray-400' : ''}`}>
                                                 {Array.isArray(entity[column.accessor])
                                                     ? entity[column.accessor].map((item: any, i: number) => (
                                                         <div key={`${entity.id}-${column.accessor}-${i}`}>
@@ -150,6 +182,28 @@ const EntityList: React.FC<EntityListProps> = ({
                                                             : entity[column.accessor]}
                                             </td>
                                         ))}
+                                        {user?.role !== 'staff' && (
+                                            entity?.status === 'pending' ? (
+                                                <td>
+                                                    <div className='flex gap-3 items-center justify-center'>
+                                                        <button
+                                                            className='text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500'
+                                                            onClick={() => handleApprove(entity)}
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                        <button
+                                                            className='text-black inline-block text-md cursor-pointer bg-sky-300 px-4 py-2 rounded-md font-semibold hover:bg-sky-500'
+                                                            onClick={() => handleReject(entity)}
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            ) : (
+                                                <td className='px-3'><span>--</span></td>
+                                            )
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

@@ -55,10 +55,10 @@ const EntityPage: React.FC<EntityPageProps> = ({
     );
 
     const handleEdit = () => {
-        if (selectedEntity?.status === 'approved') {
-            dispatch(setShowEditModal(true));
-        } else {
+        if (selectedEntity?.status === 'pending' && user?.role === 'staff') {
             dispatch(setAlert({ id: uuidv4(), message: `${entityName} pending approval...`, type: 'warning' }));
+        } else {
+            dispatch(setShowEditModal(true));
         }
     };
 
