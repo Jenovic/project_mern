@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { IGetUserAuthInfoRequest } from "../types/express";
 import { body, validationResult } from "express-validator";
-import { isValidObjectId } from "../utils/helpers";
+import { isValidObjectId, sortByPendingAndName } from "../utils/helpers";
 import Student from "../models/Student";
 import Class from "../models/Class";
 import Location from "../models/Location";
@@ -218,12 +218,13 @@ router.get('/', auth, async (req: Request, res: Response) => {
         }
 
         // Fetch filtered students, paginated
-        const students = await Student.find(query)
-            .sort({ surname: 1 })
-            .limit(limit).skip(skip)
+        let students = await Student.find(query)
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
+
+        students = sortByPendingAndName(students, false);
+        students = students.slice(skip, skip + limit);
 
         const total = await Student.countDocuments(query);
 

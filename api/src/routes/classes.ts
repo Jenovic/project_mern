@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { IGetUserAuthInfoRequest } from "../types/express";
-import { isValidObjectId } from "../utils/helpers";
+import { isValidObjectId, sortByPendingAndName } from "../utils/helpers";
 import auth from "../middleware/auth";
 import Class from "../models/Class";
 import Location from "../models/Location";
@@ -131,11 +131,12 @@ router.get('/', auth, async (req: Request, res: Response) => {
             query.location = locationId;
         }
 
-        const classrooms = await Class.find(query)
-            .sort({ name: 1 })
-            .limit(limit).skip(skip)
+        let classrooms = await Class.find(query)
             .populate('location', 'name')
             .exec();
+
+        classrooms = sortByPendingAndName(classrooms, true);
+        classrooms = classrooms.slice(skip, skip + limit);
 
         const total = await Class.countDocuments(query);
 
