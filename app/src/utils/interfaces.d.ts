@@ -20,7 +20,8 @@ export interface FormData {
     location?: {
         _id: string;
         name: string;
-    }
+    };
+    status?: string;
 }
 
 export interface Responsable {

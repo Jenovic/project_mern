@@ -1,3 +1,5 @@
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
 import FormField from "../Form/FormField";
 import { Responsable, Field } from "../../utils/interfaces";
 import { relationshipOptions } from "../../utils/helpers";
@@ -19,6 +21,8 @@ const ResponsableTabs: React.FC<ResponsableProps> = ({
     handleDeleteResponsableClick,
     fields
 }) => {
+    const { user } = useSelector((state: RootState) => state.auth);
+
     return (
         <>
             <ul className="flex border-b">
@@ -36,14 +40,16 @@ const ResponsableTabs: React.FC<ResponsableProps> = ({
                         </a>
                         <span
                             data-testid="delete"
-                            className="pr-4 hover:cursor-pointer"
-                            onClick={() => handleDeleteResponsableClick(responsable.name)}
+                            className={`pr-4 ${user?.role !== 'staff' ? 'hover:cursor-pointer' : 'hover:cursor-not-allowed'}`}
+                            onClick={user?.role !== 'staff' ? () => handleDeleteResponsableClick(responsable.name) : undefined}
+                            aria-disabled={user.role === 'staff'}
+                            title={`${user?.role !== 'staff' ? 'Delete the selected responsable' : 'Only an Admin user can perform this task'}`}
                         >
                             <i className="fa-solid fa-trash hover:text-sky-500"></i>
                         </span>
                     </li>
                 ))}
-            </ul>
+            </ul >
             <div className="p-5 border-l border-r border-b">
                 <div className="grid lg:grid-cols-2 lg:gap-x-5">
                     {responsables[activeTab] && (

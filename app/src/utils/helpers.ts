@@ -1,3 +1,5 @@
+import CryptoJS from 'crypto-js';
+
 export const determineType = (s: string, name?: string) => {
     let res = '';
     switch (s) {
@@ -48,3 +50,9 @@ export const relationshipOptions = [
     { value: 'relative', label: 'relative' },
     { value: 'sponsor', label: 'sponsor' },
 ]
+
+
+export const decryptFn = (data: string) => {
+    const bytes = CryptoJS.AES.decrypt(data, '*****************');
+    return bytes.toString(CryptoJS.enc.Utf8);
+}

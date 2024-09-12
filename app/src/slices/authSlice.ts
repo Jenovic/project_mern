@@ -14,52 +14,42 @@ const initialState: Auth = {
     user: null,
 }
 
+const saveTokenToLocalStorage = (token: string) => localStorage.setItem('token', token);
+const removeTokenFromLocalStorage = () => localStorage.removeItem('token');
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
         loginSuccess: (state, action: PayloadAction<Auth>) => {
             const { token } = action.payload;
-            localStorage.setItem('token', token);
-            return {
-                ...state,
-                token,
-                isAuthenticated: true,
-                // loading: false,
-            };
+            saveTokenToLocalStorage(token);
+            state.token = token;
+            state.isAuthenticated = true;
         },
         loadUser: (state, action: PayloadAction<Auth>) => {
-            return {
-                ...state,
-                isAuthenticated: true,
-                loading: false,
-                user: action.payload,
-            }
+            state.isAuthenticated = true;
+            state.loading = false;
+            state.user = action.payload;
         },
         authError: (state) => {
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                token: '',
-                loading: false,
-            };
+            removeTokenFromLocalStorage();
+            state.token = '';
+            state.isAuthenticated = false;
+            state.loading = false;
         },
         loginError: (state) => {
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                token: '',
-                loading: false,
-            };
+            removeTokenFromLocalStorage();
+            state.token = '';
+            state.isAuthenticated = false;
+            state.loading = false;
         },
         logout: (state) => {
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                token: '',
-                isAuthenticated: false,
-                loading: false,
-            };
+            removeTokenFromLocalStorage();
+            state.token = '';
+            state.isAuthenticated = false;
+            state.loading = false;
+            state.user = null;
         },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;

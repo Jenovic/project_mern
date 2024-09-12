@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { getClassroomsSvc } from '../../services/classrooms';
-import { loadClassrooms, setLoading, setSelectedClassroom, setFields } from '../../slices/classroomSlice';
+import { getClassroomsSvc, updateClassroomSvc, deleteClassroomSvc } from '../../services/classrooms';
+import { loadClassrooms, updateClassroom, setLoading, setSelectedClassroom, setFields } from '../../slices/classroomSlice';
 import { RootState } from '../../store';
 import EntityList from '../Entity/EntityList';
 import ClassroomCard from './ClassroomCard';
@@ -13,7 +13,10 @@ const ClassroomList: React.FC<{ showFull: boolean }> = ({ showFull }) => {
         <EntityList
             entityName='Classroom'
             fetchSvc={getClassroomsSvc}
+            updateSvc={updateClassroomSvc}
             loadEntities={(classrooms) => dispatch(loadClassrooms(classrooms))}
+            updateEntity={updateClassroom}
+            deleteSvc={deleteClassroomSvc}
             setEntityFields={(fields) => dispatch(setFields(fields))}
             setEntitySubFields={() => { }}
             setLoading={(loading) => dispatch(setLoading(loading))}

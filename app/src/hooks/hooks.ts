@@ -4,6 +4,7 @@ import { setUpdateDisabled } from '../slices/studentSlice';
 import { RootState } from '../store';
 import { formatDate } from '../utils/helpers';
 import { Field, FormData } from '../utils/interfaces';
+import { useLocation } from 'react-router-dom';
 
 export const useFormState = (selectedEntity: any, fields: Field[]) => {
     const [formData, setFormData] = useState<FormData>({});
@@ -59,4 +60,8 @@ export const useModalState = () => {
         handleCloseNotifModal,
         handleCloseResponsableModal
     };
+};
+
+export const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
 };

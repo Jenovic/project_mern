@@ -22,12 +22,7 @@ const locationSlice = createSlice({
     name: 'location',
     initialState,
     reducers: {
-        loadLocations: (state, action: PayloadAction<Location[]>) => {
-            return {
-                ...state,
-                locations: action.payload
-            }
-        }
+        loadLocations: (state, action: PayloadAction<Location[]>) => { state.locations = action.payload; }
     },
 });
 

@@ -35,6 +35,7 @@ const StudentSchema = new Schema({
     responsables: [ResponsableSchema], // Array of Responsible details
     class: { type: mongoose.Schema.Types.ObjectId, ref: 'class' },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'location' },
+    status: { type: String, enum: ['pending', 'approved'], default: 'pending' },
     dateCreated: { type: Date, default: Date.now },
     dateModified: { type: Date, default: Date.now },
 });
@@ -50,6 +51,7 @@ export interface IStudent extends Document {
     responsables: IResponsableSchema[];
     class?: IClass;
     location?: ILocation;
+    status: string;
     dateCreated: Date;
     dateModified: Date;
 }

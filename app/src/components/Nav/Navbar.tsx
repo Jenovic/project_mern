@@ -36,7 +36,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between">
                     {/* Logo on the left */}
                     <div className="text-black text-3xl font-semibold">
-                        <a href="/" className="flex items-center gap-3"><img src={book} alt="Logo" /><span className='logo'>SMS<span className='text-xs pl-1'>by @OutData</span></span></a>
+                        <a href="/dashboard" className="flex items-center gap-3"><img src={book} alt="Logo" /><span className='logo'>SMS<span className='text-xs pl-1'>By OUTDATA</span></span></a>
                     </div>
 
                     {/* Links on the right */}
@@ -52,8 +52,9 @@ const Navbar = () => {
                                         <li className="px-4 py-2  hover:bg-gray-100">
                                             <p className='font-medium uppercase text-xs'>Account</p>
                                             <div className='pl-2 flex flex-col py-1'>
-                                                <span className='font-medium text-sm'>{user?.name}</span>
+                                                <span className='font-medium text-sm capitalize'>{user?.name}</span>
                                                 <span className='text-sm'>{user?.email}</span>
+                                                <span className='text-sm capitalize'>{user?.role}</span>
                                             </div>
                                         </li>
                                         <li className="px-4 py-2 hover:bg-gray-100">

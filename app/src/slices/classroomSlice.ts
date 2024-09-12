@@ -27,33 +27,11 @@ const classroomSlice = createSlice({
     name: 'classroom',
     initialState,
     reducers: {
-        loadClassrooms: (state, action: PayloadAction<Classroom[]>) => {
-            return {
-                ...state,
-                classrooms: action.payload,
-                loading: false,
-            }
-        },
-        updateClassroom: (state, action: PayloadAction<Classroom>) => {
-            return {
-                ...state,
-                loading: false,
-            }
-        },
-        addClassroom: (state, action: PayloadAction<Classroom>) => {
-            return {
-                ...state,
-                classrooms: [...state.classrooms, action.payload],
-                loading: false,
-            }
-        },
+        loadClassrooms: (state, action: PayloadAction<Classroom[]>) => { state.classrooms = action.payload; state.loading = false; },
+        updateClassroom: (state, action: PayloadAction<Classroom>) => { state.loading = false; },
+        addClassroom: (state, action: PayloadAction<Classroom>) => { state.classrooms = [...state.classrooms, action.payload]; state.loading = false; },
         deleteClassroom: (state, action: PayloadAction<Classroom>) => { },
-        setFields: (state, action: PayloadAction<[]>) => {
-            return {
-                ...state,
-                fields: action.payload,
-            }
-        },
+        setFields: (state, action: PayloadAction<[]>) => { state.fields = action.payload; },
         setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
         setUpdateDisabled: (state, action: PayloadAction<boolean>) => { state.updateDisabled = action.payload },
         setSelectedClassroom: (state, action: PayloadAction<any>) => { state.selectedClassroom = action.payload },

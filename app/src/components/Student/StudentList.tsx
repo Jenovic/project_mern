@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { getStudentsSvc } from '../../services/students';
-import { loadStudents, setLoading, setSelectedStudent, setFields, setResponsibleFields } from '../../slices/studentSlice';
+import { getStudentsSvc, updateStudentSvc, deleteStudentSvc } from '../../services/students';
+import { loadStudents, setLoading, setSelectedStudent, setFields, setResponsibleFields, updateStudent } from '../../slices/studentSlice';
 import { RootState } from '../../store';
 import StudentCard from './StudentCard';
 import EntityList from '../Entity/EntityList';
@@ -13,7 +13,10 @@ const StudentList: React.FC<{ showFull: boolean }> = ({ showFull }) => {
         <EntityList
             entityName="Student"
             fetchSvc={getStudentsSvc}
+            updateSvc={updateStudentSvc}
             loadEntities={(students) => dispatch(loadStudents(students))}
+            updateEntity={updateStudent}
+            deleteSvc={deleteStudentSvc}
             setEntityFields={(fields) => dispatch(setFields(fields))}
             setEntitySubFields={(fields) => dispatch(setResponsibleFields(fields))}
             setLoading={(loading) => dispatch(setLoading(loading))}

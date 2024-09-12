@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setAlert } from '../slices/alertSlice';
@@ -6,50 +6,54 @@ import type { RootState } from '../store';
 import { loginSuccess, loginError, loadUser } from '../slices/authSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { loginSvc, loadUserSvc } from '../services/auth';
+import { getLocationsSvc } from '../services/locations';
+import { loadLocations } from '../slices/locationSlice';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
     const [showPassword, setShowPassword] = useState(false);
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handleEmailChange = (e: any) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e: any) => {
-        setPassword(e.target.value);
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-
+    const handleLogin = async () => {
         try {
+            const { email, password } = formData;
             const res = await loginSvc(email, password);
             dispatch(loginSuccess({ token: res.data.token }));
             const user = await loadUserSvc();
             dispatch(loadUser(user.data));
+            const locations = await getLocationsSvc();
+            dispatch(loadLocations(locations.data));
         } catch (error: any) {
             dispatch(loginError());
-            const errors = error.response.data.errors;
-            errors.forEach((error: any) => {
-                const message = error.msg;
-                dispatch(setAlert({ id: uuidv4(), message: message, type: 'error' }));
+            error.response.data.errors.forEach((err: { msg: string }) => {
+                dispatch(setAlert({ id: uuidv4(), message: err.msg, type: 'error' }));
             });
         }
+    }
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        handleLogin();
     };
 
     useEffect(() => {
         if (isAuthenticated) {
             navigate('/dashboard');
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, navigate]);
 
     return (
         <section className='max-w-8xl mx-auto'>
@@ -61,8 +65,9 @@ const Login = () => {
                             <label className="block text-sm font-medium text-gray-700">Email:</label>
                             <input
                                 type="email"
-                                value={email}
-                                onChange={handleEmailChange}
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 required
                                 className="block w-full border rounded py-2 px-3 text-gray-700 mt-1 focus:outline-none focus:ring focus:border-blue-300"
                             />
@@ -71,8 +76,9 @@ const Login = () => {
                             <label className="block text-sm font-medium text-gray-700">Password:</label>
                             <input
                                 type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={handlePasswordChange}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
                                 required
                                 className="block w-full border rounded py-2 px-3 text-gray-700 mt-1 focus:outline-none focus:ring focus:border-blue-300"
                             />

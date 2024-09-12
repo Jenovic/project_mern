@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
-import { body, validationResult, check } from "express-validator";
-import { isValidObjectId } from "../utils/helpers";
+import { body, validationResult } from "express-validator";
+import { IGetUserAuthInfoRequest } from "../types/express";
+import { isValidObjectId, sortByPendingAndName } from "../utils/helpers";
 import Teacher from "../models/Teacher";
 import Class from "../models/Class";
 import Location from "../models/Location";
+import User from "../models/User";
 import auth from "../middleware/auth";
 
 const router = express.Router();
@@ -48,7 +50,7 @@ router.post('/', [
             }
             return true;
         }),
-], auth, async (req: Request, res: Response) => {
+], auth, async (req: IGetUserAuthInfoRequest, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -58,11 +60,15 @@ router.post('/', [
     const { gender, name, middleName, surname, dob, address, phoneNumber, email, class: classObj, location: locationObj } = req.body;
 
     try {
+        const user = await User.findById(req.user.id).select('-password');
+
         let teacher = await Teacher.findOne({ name, surname, dob });
 
         if (teacher) return res.status(400).json({ errors: [{ msg: 'Teacher already exists' }] });
 
         teacher = new Teacher({ gender, name, middleName, surname, dob, address, phoneNumber, email });
+
+        if (user?.role !== 'staff') teacher.status = 'approved';
 
         // Update class if provided
         if (classObj) {
@@ -113,7 +119,7 @@ router.put('/:teacher_id', [
             return true;
         }),
 ], auth, async (req: Request, res: Response) => {
-    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class: classObj, location: locationObj } = req.body;
+    const { gender, name, middleName, surname, dob, address, phoneNumber, email, class: classObj, location: locationObj, status } = req.body;
 
     try {
         let teacher = await Teacher.findById(req.params.teacher_id);
@@ -128,6 +134,7 @@ router.put('/:teacher_id', [
         if (address) teacher.address = address;
         if (phoneNumber) teacher.phoneNumber = phoneNumber;
         if (email) teacher.email = email;
+        if (status) teacher.status = status;
         teacher.dateModified = new Date();
 
         // Update class if provided
@@ -160,16 +167,28 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const { class: classId, location: locationId } = req.query;
 
     try {
-        const teachers = await Teacher.find()
-            .sort({ surname: 1 })
-            .limit(limit).skip(skip)
+        const query: any = {};
+
+        if (typeof classId === 'string' && isValidObjectId(classId)) {
+            query.class = classId;
+        }
+
+        if (typeof locationId === 'string' && isValidObjectId(locationId)) {
+            query.location = locationId;
+        }
+
+        let teachers = await Teacher.find(query)
             .populate('class', 'name')
             .populate('location', 'name')
             .exec();
 
-        const total = await Teacher.countDocuments();
+        teachers = sortByPendingAndName(teachers, false);
+        teachers = teachers.slice(skip, skip + limit);
+
+        const total = await Teacher.countDocuments(query);
 
         if (!teachers || teachers.length === 0) return res.status(404).json({ errors: [{ msg: 'No teachers found' }] });
 

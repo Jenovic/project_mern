@@ -1,7 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { PreloadedState } from "@reduxjs/toolkit";
+import { configureStore, PreloadedState } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { getStudentSvc } from "../services/students";
 import authReducer from '../slices/authSlice';
 import studentReducer from '../slices/studentSlice';
 import teacherReducer from '../slices/teacherSlice';

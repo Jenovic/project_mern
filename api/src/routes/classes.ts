@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
-import { body, validationResult, check } from "express-validator";
-import { isValidObjectId } from "../utils/helpers";
+import { body, validationResult } from "express-validator";
+import { IGetUserAuthInfoRequest } from "../types/express";
+import { isValidObjectId, sortByPendingAndName } from "../utils/helpers";
 import auth from "../middleware/auth";
 import Class from "../models/Class";
 import Location from "../models/Location";
+import User from "../models/User";
 
 const router = express.Router();
 
@@ -36,7 +38,7 @@ router.post('/', [
             }
             return true;
         }),
-], auth, async (req: Request, res: Response) => {
+], auth, async (req: IGetUserAuthInfoRequest, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -46,11 +48,15 @@ router.post('/', [
     const { name, location: locationObj } = req.body;
 
     try {
+        const user = await User.findById(req.user.id).select('-password');
+
         let classroom = await Class.findOne({ name });
 
         if (classroom) return res.status(400).json({ errors: [{ msg: 'Classroom already exists' }] });
 
         classroom = new Class({ name });
+
+        if (user?.role !== 'staff') classroom.status = 'approved';
 
         // Update location if provided
         if (locationObj) {
@@ -83,7 +89,7 @@ router.put('/:class_id', [
             return true;
         }),
 ], auth, async (req: Request, res: Response) => {
-    const { name, location: locationObj } = req.body;
+    const { name, location: locationObj, status } = req.body;
 
     try {
         let classroom = await Class.findById(req.params.class_id);
@@ -91,6 +97,7 @@ router.put('/:class_id', [
 
         // update classroom's fields
         if (name) classroom.name = name;
+        if (status) classroom.status = status;
         classroom.dateModified = new Date();
 
         // Update location if provided
@@ -115,15 +122,23 @@ router.get('/', auth, async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const { location: locationId } = req.query;
 
     try {
-        const classrooms = await Class.find()
-            .sort({ name: 1 })
-            .limit(limit).skip(skip)
+        const query: any = {};
+
+        if (typeof locationId === 'string' && isValidObjectId(locationId)) {
+            query.location = locationId;
+        }
+
+        let classrooms = await Class.find(query)
             .populate('location', 'name')
             .exec();
 
-        const total = await Class.countDocuments();
+        classrooms = sortByPendingAndName(classrooms, true);
+        classrooms = classrooms.slice(skip, skip + limit);
+
+        const total = await Class.countDocuments(query);
 
         if (!classrooms) return res.status(404).json({ errors: [{ msg: 'No classrooms found' }] });
 
