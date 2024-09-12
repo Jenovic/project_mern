@@ -25,7 +25,7 @@ const Dashboard = () => {
                                 <Tiles name="Students" iconClass='fa-solid fa-users' iconColor='orange-500' onclick={() => { navigate('/students'); }}></Tiles>
                                 <Tiles name="Teachers" iconClass='fa-solid fa-user' iconColor='blue-500' onclick={() => { navigate('/teachers'); }}></Tiles>
                                 <Tiles name="Classrooms" iconClass='fa-solid fa-school' iconColor='green-500' onclick={() => { navigate('/classrooms'); }}></Tiles>
-                                <Tiles name="Statistics" iconClass='fa-solid fa-chart-simple' iconColor='pink-500' onclick={() => { }}></Tiles>
+                                <Tiles name="Statistics" iconClass='fa-solid fa-chart-line' iconColor='pink-500' onclick={() => { navigate('/statistics') }}></Tiles>
                             </div>
                             <div className='gap-5'>
                                 <div className='flex gap-4 items-center my-5'>

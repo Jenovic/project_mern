@@ -18,6 +18,7 @@ const LeftMenu = () => {
                 <Link to='/students'><span className="text-white"><i className='fa-solid fa-users'></i></span> Students</Link>
                 <Link to='/teachers'><span className="text-white"><i className='fa-solid fa-user'></i></span> Teachers</Link>
                 <Link to='/classrooms'><span className="text-white"><i className='fa-solid fa-school'></i></span> Classrooms</Link>
+                <Link to='/statistics'><span className="text-white"><i className='fa-solid fa-chart-line'></i></span> Statistics</Link>
                 {user?.role === 'superadmin' &&
                     <div>
                         <h4 className='pb-2'>Admin center <span className="text-black"><i className='fa-solid fa-cog'></i></span></h4>

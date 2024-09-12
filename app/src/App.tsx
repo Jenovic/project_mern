@@ -16,6 +16,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Students from './components/Student/Students';
 import Teachers from './components/Teacher/Teachers';
 import Classrooms from './components/Classroom/Classrooms';
+import Statistics from './components/Statistic/Statistics';
 import Users from './components/User/Users';
 import setAuthToken from './utils/setAuthToken';
 import { v4 as uuidv4 } from 'uuid';
@@ -63,6 +64,7 @@ const App = () => {
           <Route path="/students" element={<PrivateRoute element={<Students />} />} />
           <Route path="/teachers" element={<PrivateRoute element={<Teachers />} />} />
           <Route path="/classrooms" element={<PrivateRoute element={<Classrooms />} />} />
+          <Route path="/statistics" element={<PrivateRoute element={<Statistics />} />} />
           <Route path="/users" element={<PrivateRoute element={<Users />} requiredRole="superadmin" />} />
         </Routes>
       </>
